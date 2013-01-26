@@ -1,0 +1,57 @@
+<div id="partial_encryption_key">
+	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post" id="step_form">
+		<input type="hidden" name="step" value="encryption_key" />
+		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
+		
+		<h1>Encryption Key</h1>
+		<p class="lead">Please choose an encryption key for protecting sensitive information, such as user passwords.</p>
+
+
+		<?php 
+			$error_field = '';
+			if (isset($error)): 
+				if ($error instanceof ValidationException)
+					$error_field = $error->field;
+		?>
+		<?php endif ?>
+
+		<fieldset>
+			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'encryption_key') ?>">
+				<label for="encryption_key">Encryption Key</label>
+				<input autocomplete="off" type="password" name="encryption_key" id="encryption_key" class="text" />
+				<p class="tip">The encryption key should be at least 6 characters in length.</p>
+			</li>
+			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'confirmation') ?>">
+				<label for="encryption_key">Key Confirmation</label>
+				<input autocomplete="off" type="password" name="confirmation" id="confirmation" class="text" />
+			</div>
+		</fieldset>
+
+		<p><em>Important:</em> Remember the encryption key because it may be needed if you want to reinstall or move to another server. Without the encryption key it will not be possible to decrypt data and sensitive information could be lost.</p>
+
+        <div class="form-actions">
+            <div class="pull-right">
+				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" />
+            </div>
+            <?php if (isset($error)): ?>
+                <div class="pull-right">
+                    <div class="alert error"><?php echo Phpr_Installer::h($error->getMessage()) ?></div>
+                </div>
+            <?php endif ?>
+        </div>
+
+	</form>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){ 
+		<?php if (!($error_field)): ?>
+			$('#encryption_key').focus();
+		<?php else: ?>
+			$('#<?php echo $error_field ?>').focus();
+		<?php endif ?>
+		
+		$('#step_form').submit(function() {
+			$('#next_btn').attr('disabled', true);
+		});
+	});
+</script>

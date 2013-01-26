@@ -1,0 +1,80 @@
+<div id="partial_system_configuration">
+	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post" id="step_form">
+		<input type="hidden" name="step" value="system_configuration" />
+		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
+
+		<h1>System Configuration</h1>
+		<p class="lead">You can always change these settings by updating the config file.</p>
+
+		<?php 
+			$error_field = '';
+			if (isset($error)): 
+				if ($error instanceof ValidationException)
+					$error_field = $error->field;
+		?>
+		<?php endif ?>
+
+		<fieldset>
+			<legend>Folder and File Permissions</legend>
+			<p>
+				Specify a permission mask for folders and files used for installation and software updates. 
+				The default value (777) is the most common. 
+			</p>
+			<div class="control mini <?php echo Phpr_Installer::error_marker($error_field, 'folder_mask') ?>">
+				<label for="folder_mask">Folder Permission Mask</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('folder_mask', '777')) ?>" type="text" name="folder_mask" id="folder_mask" class="text" />
+			</div>
+			<div class="control mini <?php echo Phpr_Installer::error_marker($error_field, 'file_mask') ?>">
+				<label for="file_mask">File Permission Mask</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('file_mask', '777')) ?>" type="text" name="file_mask" id="file_mask" class="text" />
+			</div>
+		</fieldset>
+
+
+		<fieldset>
+			<legend>Time Zone</legend>
+			<p>Specify the time zone used for displaying the correct time.</p>
+			<div class="control mini">
+				<label for="time_zone">Time Zone</label>
+				<?php $time_zones = timezone_identifiers_list(); ?>
+				<select name="time_zone" id="time_zone">
+					<?php foreach ($time_zones as $time_zone): 
+						$posted_zone = Phpr_Installer::post('time_zone');
+						if (!$posted_zone)
+							$checked = $time_zone == 'Australia/Sydney';
+						else
+							$checked = $time_zone == $posted_zone;
+					?>
+						<option <?php echo $checked ? 'selected="selected"' : null  ?> value="<?php echo Phpr_Installer::h($time_zone) ?>"><?php echo Phpr_Installer::h($time_zone) ?></option>
+					<?php endforeach ?>
+				</select>
+			</div>
+		</fieldset>
+
+
+	    <div class="form-actions">
+	        <div class="pull-right">
+				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" />
+	        </div>
+	        <?php if (isset($error)): ?>
+	            <div class="pull-right">
+	                <div class="alert error"><?php echo Phpr_Installer::h($error->getMessage()) ?></div>
+	            </div>
+	        <?php endif ?>      
+	    </div>
+
+	</form>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){ 
+		<?php if (!($error_field)): ?>
+			$('#folder_mask').focus();
+		<?php else: ?>
+			$('#<?php echo $error_field ?>').focus();
+		<?php endif ?>
+		
+		$('#step_form').submit(function() {
+			$('#next_btn').attr('disabled', true);
+		});
+	});
+</script>

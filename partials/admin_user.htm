@@ -1,0 +1,79 @@
+<div id="partial_admin_user">
+
+	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post" id="step_form">
+		<input type="hidden" name="step" value="admin_user" />
+		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
+
+		<h1>System Administrator Account</h1>
+		<p class="lead">Create an account for logging in to the Administration Area.</p>
+
+		<?php 
+			$error_field = '';
+			if (isset($error)): 
+				if ($error instanceof ValidationException)
+					$error_field = $error->field;
+		?>
+		<?php endif ?>
+
+
+		<fieldset>
+			<legend>Personal Information</legend>
+			<div class="control half <?php echo Phpr_Installer::error_marker($error_field, 'firstname') ?>">
+				<label for="firstname">First Name</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('firstname')) ?>" type="text" name="firstname" id="firstname" class="text" />
+			</div>
+			
+			<div class="control half <?php echo Phpr_Installer::error_marker($error_field, 'lastname') ?>">
+				<label for="lastname">Last Name</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('lastname')) ?>" type="text" name="lastname" id="lastname" class="text" />
+			</div>
+			
+			<div class="control full <?php echo Phpr_Installer::error_marker($error_field, 'email') ?>">
+				<label for="email">Email</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('email')) ?>" type="text" name="email" id="email" class="text" />
+			</div>
+		</fieldset>
+		
+		<fieldset>
+			<legend>Account</legend>
+			<div class="control full <?php echo Phpr_Installer::error_marker($error_field, 'username') ?>">
+				<label for="username">Username</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('username')) ?>" type="text" name="username" id="username" class="text" />
+			</div>
+			<div class="control half <?php echo Phpr_Installer::error_marker($error_field, 'password') ?>">
+				<label for="password">Password</label>
+				<input autocomplete="off" value="" type="password" name="password" id="password" class="text" />
+			</div>
+			<div class="control half <?php echo Phpr_Installer::error_marker($error_field, 'password_confirm') ?>">
+				<label for="password_confirm">Confirmation</label>
+				<input autocomplete="off" value="" type="password" name="password_confirm" id="password_confirm" class="text" />
+			</div>
+		</fieldset>
+
+
+	    <div class="form-actions">
+	        <div class="pull-right">
+				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" />
+	        </div>
+	        <?php if (isset($error)): ?>
+	            <div class="pull-right">
+	                <div class="alert error"><?php echo Phpr_Installer::h($error->getMessage()) ?></div>
+	            </div>
+	        <?php endif ?>      
+	    </div>
+
+	</form>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){ 
+		<?php if (!($error_field)): ?>
+			$('#firstname').focus();
+		<?php else: ?>
+			$('#<?php echo $error_field ?>').focus();
+		<?php endif ?>
+		
+		$('#step_form').submit(function() {
+			$('#next_btn').attr('disabled', true);
+		});
+	});
+</script>

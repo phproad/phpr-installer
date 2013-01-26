@@ -1,0 +1,60 @@
+<div id="partial_admin_url">
+	<h1>Administration URL</h1>
+	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post" id="step_form">
+		<input type="hidden" name="step" value="admin_url" />
+		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
+		
+		<p>
+			The Administration Area is a back-end user interface which you will use for building the website and managing your site. 
+			By default the URL of the Administration Area is:
+		</p>
+		<blockquote>
+			<?php echo Phpr_Installer::get_root_url().Phpr_Installer::installer_root_url('<em>admin</em>') ?> 
+		</blockquote>
+		<p>
+			It is recommended you change the default value to make the system more secure. 
+			You can always change the URL after the installation by updating the config/config.php file.
+		</p>
+		
+		<?php 
+			$error_field = '';
+			if (isset($error)): 
+				if ($error instanceof ValidationException)
+					$error_field = $error->field;
+		?>
+		<?php endif ?>
+
+		<fieldset>
+			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'admin_url') ?>">
+				<label for="admin_url">Admin Area URL</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('admin_url', 'admin')) ?>" type="text" name="admin_url" id="admin_url" class="text" />
+				<p class="tip">Please specify a value which you will use to access the Administration Area.</p>
+			</div>
+		</fieldset>
+
+	    <div class="form-actions">
+	        <div class="pull-right">
+				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" />
+	        </div>
+	        <?php if (isset($error)): ?>
+	            <div class="pull-right">
+	                <div class="alert error"><?php echo Phpr_Installer::h($error->getMessage()) ?></div>
+	            </div>
+	        <?php endif ?>      
+	    </div>
+	</form>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){ 
+		<?php if (!($error_field)): ?>
+			$('#admin_url').focus();
+		<?php else: ?>
+			$('#<?php echo $error_field ?>').focus();
+		<?php endif ?>
+		
+		$('#step_form').submit(function() {
+			$('#next_btn').attr('disabled', true);
+		});
+	});
+</script>

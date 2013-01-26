@@ -1,0 +1,469 @@
+<?php
+
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+if (function_exists('set_magic_quotes_runtime'))
+    @set_magic_quotes_runtime(0);
+
+if (!ini_get('safe_mode'))
+    set_time_limit(3600);
+
+date_default_timezone_set('Australia/Sydney');
+// ini_set('date.timezone', 'AEST');
+// ini_set('display_errors', 0);
+// error_reporting(0);
+
+include "install_config.php";
+include "install_crypt.php";
+include "phpr_installer_manager.php";
+include "zip_helper.php";
+
+$APP_CONF = array();
+$PHPR_NO_SESSION = false;
+
+class Phpr_Installer 
+{
+    public $core_modules = array(
+        //'framework' => 'http://github.com/responsiv/phpr/archive/master.zip', 
+        //'cms' => 'http://github.com/phproad/cms/archive/master.zip', 
+        //'core' => 'http://github.com/phproad/core/archive/master.zip', 
+        //'admin' => 'http://github.com/phproad/admin/archive/master.zip', 
+    );
+
+    public static function create()
+    {
+        return new self();
+    }
+
+    public function display_head()
+    {
+        $str = array();
+        $str[] = '<link href="http://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" type="text/css">';
+        $str[] = '<link rel="stylesheet" href="install_files/assets/css/installer.css" type="text/css" />';
+        $str[] = '<script src="install_files/assets/javascript/jquery.js"></script>';
+        $str[] = '<script src="install_files/assets/javascript/progressbar.js"></script>';
+        $str[] = '<script src="install_files/assets/javascript/download.js"></script>';
+        return implode(PHP_EOL, $str);
+    }
+
+    public function check_requirements()
+    {
+        $result = array();
+        
+        $result['PHP 5.2.5 or higher'] = version_compare(PHP_VERSION , "5.2.5", ">=");
+        $result['PHP CURL library'] = function_exists('curl_init');     
+        $result['PHP Mcrypt library'] = function_exists('mcrypt_encrypt');
+        $result['PHP MySQL functions'] = function_exists('mysql_connect');      
+        $result['Permissions for PHP to write to the installation directory'] = is_writable(PATH_INSTALL);
+        $result['PHP Multibyte String functions'] = function_exists('mb_convert_encoding');
+        $result['Short PHP tags allowed'] = ini_get('short_open_tag');
+
+        if (ini_get('safe_mode'))
+            $result['PHP Safe Mode detected '] = false;
+        
+        return $result;
+    }
+
+    public function check_remote_event()
+    {
+        return isset($_SERVER['HTTP_PHPR_REMOTE_EVENT']);
+    }
+
+    public function throw_ajax_error($message)
+    {
+        header('HTTP/1.1 500 Internal Server Error');
+        header('Content-Type: text/plain');  
+        echo $message;
+    }
+
+    public function output_install_page()
+    {
+        try
+        {
+            $this->show_installer_step();
+        } 
+        catch (Exception $ex)
+        {
+            Phpr_Installer_Manager::install_cleanup();
+            
+            if ($this->check_remote_event())
+                $this->throw_ajax_error($ex->getMessage());
+            else
+                $this->render_partial('exception', array('exception'=>$ex));
+        }
+    }
+
+    public function show_installer_step()
+    {
+        $this_step = self::post('step');
+
+        switch ($this_step)
+        {
+            // AJAX actions
+            // 
+            
+            case 'request_package':
+                $package_name = self::post('package_name');
+                
+                if (!strlen(trim($package_name)))
+                    throw new Exception('No packages to install');
+
+                if (!isset($this->core_modules[$package_name]))
+                    throw new Exception('Unknown package with name '.$package_name);
+
+                Phpr_Installer_Manager::download_package($package_name, $this->core_modules[$package_name]);
+            break;
+
+            case 'unzip_package':
+                sleep(1);
+
+                $package_name = self::post('package_name');
+
+                if (!strlen(trim($package_name)))
+                    throw new Exception('No packages to to process');
+
+                if (!isset($this->core_modules[$package_name]))
+                    throw new Exception('Unknown package with name '.$package_name);
+
+                Phpr_Installer_Manager::unzip_package($package_name);
+            break;
+
+            // Controller steps
+            // 
+            
+            default: 
+                $this->render_partial('requirements'); 
+            break;
+
+            case 'welcome': 
+                $this->render_partial('terms'); 
+            break;
+
+            case 'requirements': 
+            case 'install':
+                if (defined('URL_GATEWAY'))
+                    $this->render_partial('licence_information'); 
+                else
+                    $this->render_partial('download_packages'); 
+            break;
+
+            case 'download_packages':
+                $this->render_partial('database_configuration');
+            break;
+
+            case 'licence_information': 
+                if (!defined('URL_GATEWAY'))
+                    die($this->render_partial('download_packages'));
+
+                $error = false;
+                try
+                {
+                    $install_params = Phpr_Installer_Manager::validate_licence_information(
+                        trim(self::post('holder_name')),
+                        trim(self::post('serial_number'))
+                    );
+
+                    Install_Crypt::create()->encrypt_to_file(
+                        PATH_INSTALL_APP.'/temp/params1.dat', 
+                        $install_params, 
+                        self::post('install_key')
+                    );                    
+                }
+                catch (Exception $ex)
+                {
+                    $error = $ex;
+                }
+
+                if ($error)
+                    $this->render_partial('licence_information', array('error' => $error)); 
+                else
+                    $this->render_partial('database_configuration');
+            break;
+
+            case 'database_configuration':
+                $error = false;
+                try
+                {
+                    $install_params = Phpr_Installer_Manager::validate_database_config(
+                        trim(self::post('mysql_host')), 
+                        trim(self::post('db_name')), 
+                        trim(self::post('mysql_user')), 
+                        trim(self::post('mysql_password'))
+                    );
+                    
+                    Install_Crypt::create()->encrypt_to_file(
+                        PATH_INSTALL_APP.'/temp/params2.dat', 
+                        $install_params, 
+                        self::post('install_key')
+                    );
+                }
+                catch (Exception $ex)
+                {
+                    $error = $ex;
+                }
+
+                if ($error)
+                    $this->render_partial('database_configuration', array('error' => $error)); 
+                else
+                    $this->render_partial('admin_url');
+            break;
+
+            case 'admin_url':
+                $error = false;
+                try
+                {
+                    $install_params = Phpr_Installer_Manager::validate_admin_url(
+                        strtolower(trim(self::post('admin_url')))
+                    );
+                    
+                    Install_Crypt::create()->encrypt_to_file(
+                        PATH_INSTALL_APP.'/temp/params3.dat', 
+                        $install_params, 
+                        self::post('install_key')
+                    );
+                }
+                catch (Exception $ex)
+                {
+                    $error = $ex;
+                }
+
+                if ($error)
+                    $this->render_partial('admin_url', array('error' => $error)); 
+                else
+                    $this->render_partial('system_configuration');
+            break;
+
+            case 'system_configuration': 
+                $error = false;
+                try
+                {
+                    $install_params = Phpr_Installer_Manager::validate_system_config(
+                        trim(self::post('folder_mask')),
+                        trim(self::post('file_mask')), 
+                        trim(self::post('time_zone')) 
+                    );
+                    
+                    Install_Crypt::create()->encrypt_to_file(
+                        PATH_INSTALL_APP.'/temp/params4.dat', 
+                        $install_params, 
+                        self::post('install_key')
+                    );
+                }
+                catch (Exception $ex)
+                {
+                    $error = $ex;
+                }
+
+                if ($error)
+                    $this->render_partial('system_configuration', array('error' => $error)); 
+                else
+                    $this->render_partial('admin_user');
+            break;
+
+            case 'admin_user':
+                $error = false;
+                try
+                {
+                    $install_params = Phpr_Installer_Manager::validate_admin_user(
+                        trim(self::post('firstname')),
+                        trim(self::post('lastname')),
+                        trim(self::post('email')),
+                        trim(self::post('username')),
+                        trim(self::post('password')),
+                        trim(self::post('password_confirm'))
+                    );
+                    
+                    Install_Crypt::create()->encrypt_to_file(
+                        PATH_INSTALL_APP.'/temp/params5.dat', 
+                        $install_params, 
+                        self::post('install_key')
+                    );
+                }
+                catch (Exception $ex)
+                {
+                    $error = $ex;
+                }
+
+                if ($error)
+                    $this->render_partial('admin_user', array('error' => $error)); 
+                else
+                    $this->render_partial('encryption_key');
+            break;
+            
+            case 'encryption_key':
+                $error = false;
+                try
+                {
+                    $install_params = Phpr_Installer_Manager::validate_encryption_key(
+                        trim(self::post('encryption_key')),
+                        trim(self::post('confirmation'))
+                    );
+                    
+                    Install_Crypt::create()->encrypt_to_file(
+                        PATH_INSTALL_APP.'/temp/params6.dat', 
+                        $install_params, 
+                        self::post('install_key')
+                    );
+
+                    Phpr_Installer_Manager::install_phpr(self::post('install_key'));
+                }
+                catch (Exception $ex)
+                {
+                    $error = $ex;
+                }
+
+                if ($error)
+                    $this->render_partial('encryption_key', array('error' => $error)); 
+                else
+                {
+                    $files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');
+                    $this->render_partial('complete', array('base_url'=>get_base_url()));
+                }                   
+            break;
+        }
+    }
+
+    public static function get_request_uri()
+    {
+        $providers = array('REQUEST_URI', 'PATH_INFO', 'ORIG_PATH_INFO');
+        foreach ($providers as $provider)
+        {
+            $val = getenv($provider);
+            if ($val != '')
+                return $val;
+        }
+        
+        return null;
+    }
+
+    public function installer_root_url($target_url)
+    {
+        if (substr($target_url, 0, 1) == '/')
+            $target_url = substr($target_url, 1);
+        
+        $url = self::get_request_uri();
+        $url = dirname($url);
+        $url = str_replace('\\', '/', $url);
+        
+        if (substr($url, -1) != '/')
+            $url .= '/';
+
+        return $url.$target_url;
+    }
+
+    public function strleft($s1, $s2) 
+    {
+        return substr($s1, 0, strpos($s1, $s2));
+    }
+
+    public function get_root_url($protocol = null)
+    {
+        if ($protocol === null)
+        {
+            $s = empty($_SERVER["HTTPS"]) ? '' : ($_SERVER["HTTPS"] == "on") ? "s"  : "";
+            $protocol = $this->strleft(strtolower($_SERVER["SERVER_PROTOCOL"]), "/").$s;
+        }
+
+        $port = ($_SERVER["SERVER_PORT"] == "80") ? ""
+            : (":".$_SERVER["SERVER_PORT"]);
+            
+        return $protocol."://".$_SERVER['SERVER_NAME'].$port;
+    }
+
+    public static function post($name, $default = null)
+    {
+        if (isset($_POST[$name]))
+        {
+            $result = $_POST[$name];
+
+            if (get_magic_quotes_gpc())
+                $result = stripslashes( $result );
+
+            return $result;
+        }
+
+        return $default;
+    }
+
+    public static function h($str)
+    {
+        return htmlentities($str, ENT_COMPAT, 'UTF-8');
+    }
+
+    public static function error_marker($error_field, $this_field)
+    {
+        return $error_field == $this_field ? 'error' : null;
+    }
+
+    public function render_partial($name, $params = array())
+    {
+        $file = PATH_INSTALL_APP.'/partials/'.$name.'.htm';
+        if (!file_exists($file))
+            throw new Exception("Partial not found: $name");
+
+        extract($params);
+        include $file;
+    }
+
+    public function installer_remove_dir($sDir) 
+    {
+        if (is_dir($sDir)) 
+        {
+            $sDir = rtrim($sDir, '/');
+            $oDir = dir($sDir);
+            
+            while (($sFile = $oDir->read()) !== false) 
+            {
+                if ($sFile != '.' && $sFile != '..') 
+                    (!is_link("$sDir/$sFile") && is_dir("$sDir/$sFile")) ? installer_remove_dir("$sDir/$sFile") : @unlink("$sDir/$sFile");
+            }
+            $oDir->close();
+            
+            @rmdir($sDir);
+            return true;
+        }
+
+        return false;
+    }
+
+    public function gen_install_key()
+    {
+        $letters = 'abcdefghijklmnopqrstuvwxyz';
+        $result = null;
+        for ($i = 1; $i <= 6; $i++)
+            $result .= $letters[rand(0,25)];
+
+        return md5($result.time());
+    }
+
+    public function get_base_url()
+    {
+        if (isset($_SERVER['HTTP_HOST']))
+        {
+            $base_url = isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' ? 'https' : 'http';
+            $base_url .= '://'. $_SERVER['HTTP_HOST'];
+            $base_url .= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+        }
+        else
+        {
+            $base_url = 'http://localhost/';
+        }
+        return $base_url;
+    }    
+
+}
+
+class ValidationException extends Exception
+{
+    public $field;
+
+    public function __construct($message, $field)
+    {
+        parent::__construct($message);
+        $this->field = $field;
+    }
+}

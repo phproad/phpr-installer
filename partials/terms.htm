@@ -1,0 +1,27 @@
+<div id="partial_terms">
+	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post">
+		<input type="hidden" name="step" value="requirements" />
+		<input type="hidden" name="install_key" value="<?php echo md5(Phpr_Installer::gen_install_key()) ?>" />
+		
+		<h1><?php echo APP_NAME; ?> Terms of Use</h1>
+		<p class="lead">You must read and accept the following usage agreement.</p>
+
+		<div class="bottom_offset">
+			<div class="terms_scroller">
+				<div><p><?php echo nl2br(Phpr_Installer::h(file_get_contents(PATH_INSTALL_APP.'/licence.md'))) ?></p></div>
+			</div>
+		</div>
+		
+
+		<div class="form-actions">
+			<div class="pull-right">
+				<input type="submit" name="form_action" class="button" value="I Accept" />
+			</div>
+			<?php if (isset($error)): ?>
+				<div class="pull-right">
+					<div class="alert error"><?php echo Phpr_Installer::h($error) ?></div>
+				</div>
+			<?php endif ?>
+		</div>
+	</form>
+</div>

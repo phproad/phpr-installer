@@ -1,0 +1,64 @@
+<div id="partial_database_configuration">
+	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post" id="step_form">
+		<input type="hidden" name="step" value="database_configuration" />
+		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
+
+		<h1>Database Configuration</h1>
+		<p class="lead">Please prepare an empty MySQL database for this installation.</p>
+
+		<?php 
+			$error_field = '';
+			if (isset($error)): 
+				if ($error instanceof ValidationException)
+					$error_field = $error->field;
+		?>
+		<?php endif ?>
+
+		<fieldset>
+			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'mysql_host') ?>">
+				<label for="mysql_host">MySQL Host</label>
+				<input value="<?php echo Phpr_Installer::h(Phpr_Installer::post('mysql_host', 'localhost')) ?>" type="text" name="mysql_host" id="mysql_host" class="text" />
+			</div>
+			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'db_name') ?>">
+				<label for="db_name">Database Name</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('db_name')) ?>" type="text" name="db_name" id="db_name" class="text" />
+				<p class="tip">Please specify the name of an empty MySQL database.</p>
+			</div>
+			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'mysql_user') ?>">
+				<label for="mysql_user">MySQL User</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('mysql_user')) ?>" type="text" name="mysql_user" id="mysql_user" class="text" />
+				<p class="tip">MySQL user must have all privileges in the specified database.</p>
+			</div>
+			<div class="control">
+				<label for="mysql_password">MySQL Password</label>
+				<input autocomplete="off" type="password" name="mysql_password" id="mysql_password" class="text" />
+			</div>
+		</fieldset>
+
+	    <div class="form-actions">
+	        <div class="pull-right">
+				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" />
+	        </div>
+	        <?php if (isset($error)): ?>
+	            <div class="pull-right">
+	                <div class="alert error"><?php echo Phpr_Installer::h($error->getMessage()) ?></div>
+	            </div>
+	        <?php endif ?>      
+	    </div>
+
+	</form>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){ 
+		<?php if (!($error_field)): ?>
+			$('#mysql_host').focus();
+		<?php else: ?>
+			$('#<?php echo $error_field ?>').focus();
+		<?php endif ?>
+		
+		$('#step_form').submit(function() {
+			$('#next_btn').attr('disabled', true);
+		});
+	});
+</script>
