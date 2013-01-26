@@ -43,10 +43,10 @@ class Phpr_Installer
     {
         $str = array();
         $str[] = '<link href="http://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" type="text/css">';
-        $str[] = '<link rel="stylesheet" href="install_files/assets/css/installer.css" type="text/css" />';
-        $str[] = '<script src="install_files/assets/javascript/jquery.js"></script>';
-        $str[] = '<script src="install_files/assets/javascript/progressbar.js"></script>';
-        $str[] = '<script src="install_files/assets/javascript/download.js"></script>';
+        $str[] = '<link rel="stylesheet" href="'.self::find_public_path(PATH_INSTALL_APP.'/assets/css/installer.css').'" type="text/css" />';
+        $str[] = '<script src="'.self::find_public_path(PATH_INSTALL_APP.'/assets/javascript/jquery.js').'"></script>';
+        $str[] = '<script src="'.self::find_public_path(PATH_INSTALL_APP.'/assets/javascript/progressbar.js').'"></script>';
+        $str[] = '<script src="'.self::find_public_path(PATH_INSTALL_APP.'/assets/javascript/download.js').'"></script>';
         return implode(PHP_EOL, $str);
     }
 
@@ -340,7 +340,7 @@ class Phpr_Installer
         return null;
     }
 
-    public function installer_root_url($target_url)
+    public static function installer_root_url($target_url)
     {
         if (substr($target_url, 0, 1) == '/')
             $target_url = substr($target_url, 1);
@@ -358,6 +358,15 @@ class Phpr_Installer
     public function strleft($s1, $s2) 
     {
         return substr($s1, 0, strpos($s1, $s2));
+    }
+
+    public static function find_public_path($path)
+    {
+        $result = null;
+        if (strpos($path, PATH_INSTALL) === 0)
+            $result = str_replace("\\", "/", substr($path, strlen(PATH_INSTALL)));
+
+        return self::installer_root_url($result);
     }
 
     public function get_root_url($protocol = null)
@@ -407,27 +416,6 @@ class Phpr_Installer
 
         extract($params);
         include $file;
-    }
-
-    public function installer_remove_dir($sDir) 
-    {
-        if (is_dir($sDir)) 
-        {
-            $sDir = rtrim($sDir, '/');
-            $oDir = dir($sDir);
-            
-            while (($sFile = $oDir->read()) !== false) 
-            {
-                if ($sFile != '.' && $sFile != '..') 
-                    (!is_link("$sDir/$sFile") && is_dir("$sDir/$sFile")) ? installer_remove_dir("$sDir/$sFile") : @unlink("$sDir/$sFile");
-            }
-            $oDir->close();
-            
-            @rmdir($sDir);
-            return true;
-        }
-
-        return false;
     }
 
     public function gen_install_key()
