@@ -28,10 +28,10 @@ $PHPR_NO_SESSION = false;
 class Phpr_Installer 
 {
     public $core_modules = array(
-        //'framework' => 'http://github.com/responsiv/phpr/archive/master.zip', 
-        //'cms' => 'http://github.com/phproad/cms/archive/master.zip', 
-        //'core' => 'http://github.com/phproad/core/archive/master.zip', 
-        //'admin' => 'http://github.com/phproad/admin/archive/master.zip', 
+        //'framework' => 'http://github.com/phproad/phpr-framework/archive/master.zip', 
+        //'cms' => 'http://github.com/phproad/phpr-module-cms/archive/master.zip', 
+        //'core' => 'http://github.com/phproad/phpr-module-core/archive/master.zip', 
+        //'admin' => 'http://github.com/phproad/phpr-module-admin/archive/master.zip', 
     );
 
     public static function create()
