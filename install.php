@@ -10,8 +10,8 @@
  */
 
 define('APP_NAME', 'PHP Road'); 
-define('URL_INSTALL', 'http://github.com/phproad/framework/archive/master.zip');
-define('URL_TERMS', 'http://github.com/phproad/framework/raw/master/licence.md');
+define('URL_INSTALL', 'http://github.com/phproad/phpr-framework/archive/master.zip');
+define('URL_TERMS', 'http://github.com/phproad/phpr-framework/raw/master/licence.md');
 define('URL_DOCS', 'http://phproad.com/docs');
 
 // Optional
