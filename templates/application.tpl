@@ -98,7 +98,7 @@ class Application extends Phpr_Controller
 
             $action = mb_strtolower(array_shift($uri_parts));
 
-            $modules = Phpr_Module_Manager::find_modules();
+            $modules = Phpr_Module_Manager::get_modules();
             foreach ($modules as $module)
             {
                 $points = $module->subscribe_access_points($action);

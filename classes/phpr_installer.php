@@ -140,7 +140,8 @@ class Phpr_Installer
             break;
 
             case 'welcome': 
-                $this->render_partial('terms'); 
+                $terms_content = nl2br(Phpr_Installer::h(file_get_contents(PATH_INSTALL_APP.'/licence.txt')));
+                $this->render_partial('terms', array('terms_content' => $terms_content)); 
             break;
 
             case 'requirements': 
