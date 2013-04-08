@@ -10,12 +10,9 @@
  */
 
 define('APP_NAME', 'PHP Road'); 
-define('URL_INSTALL', 'http://github.com/phproad/phpr-framework/archive/master.zip');
-define('URL_TERMS', 'http://github.com/phproad/phpr-framework/raw/master/licence.md');
+define('URL_TERMS', 'http://localhost:81/phproad/resources/phpr-license.txt');
 define('URL_DOCS', 'http://phproad.com/docs');
-
-// Optional
-// define('URL_GATEWAY', 'http://phproad.com/update_gateway');
+define('URL_GATEWAY', 'http://localhost:81/phproad/phpr-gateway');
 
 $is_php4 = version_compare(PHP_VERSION, '5.0.0', '<');
 define('DS', DIRECTORY_SEPARATOR);
@@ -62,7 +59,7 @@ if (!PHP4_DETECTED)
                             <li class="tick">PHP MySQL functions</li>
                             <li class="tick">PHP Multibyte String functions</li>
                             <li class="tick">Permissions for PHP to write to the installation directory</li>
-                        </ul>                
+                        </ul>
                     </blockquote>
 
                 <? else: ?>

@@ -134,14 +134,14 @@ function show_installer_step()
 		break;
 
 		case 'requirements': 
-			render_partial('licence_information'); 
+			render_partial('website_config'); 
 		break;
 
-		case 'licence_information': 
+		case 'website_config': 
 			$error = false;
 			try
 			{
-				$hash = validate_licence_information();
+				$hash = validate_website_config();
 			}
 			catch (Exception $ex)
 			{
@@ -149,12 +149,12 @@ function show_installer_step()
 			}
 
 			if ($error)
-				render_partial('licence_information', array('error'=>$error)); 
+				render_partial('website_config', array('error'=>$error)); 
 			else
-				render_partial('system_configuration');
+				render_partial('system_config');
 		break;
 
-		case 'system_configuration':
+		case 'system_config':
 			$error = false;
 			try
 			{
@@ -166,7 +166,7 @@ function show_installer_step()
 			}
 
 			if ($error)
-				render_partial('system_configuration', array('error'=>$error)); 
+				render_partial('system_config', array('error'=>$error)); 
 			else
 				render_partial('admin_url');
 		break;
@@ -219,15 +219,15 @@ function show_installer_step()
 			if ($error)
 				render_partial('admin_user', array('error'=>$error)); 
 			else
-				render_partial('encryption_key');
+				render_partial('encryption_code');
 		break;
 		
-		case 'encryption_key':
+		case 'encryption_code':
 			$error = false;
 			$delete_files_on_install = false;
 			try
 			{
-				$delete_files_on_install = validate_encryption_key();
+				$delete_files_on_install = validate_encryption_code();
 			}
 			catch (Exception $ex)
 			{
@@ -235,7 +235,7 @@ function show_installer_step()
 			}
 
 			if ($error)
-				render_partial('encryption_key', array('error'=>$error)); 
+				render_partial('encryption_code', array('error'=>$error)); 
 			else
 			{
 				$files_deleted = !file_exists(PATH_INSTALL.'/install_files') && !file_exists(PATH_INSTALL.'/install.php');
@@ -245,7 +245,7 @@ function show_installer_step()
 		
 		default: 
 			if (defined('PHPR_BS_INSTALL'))
-				render_partial('licence_information'); 
+				render_partial('website_config'); 
 			else
 				render_partial('welcome'); 
 		break;
@@ -303,17 +303,17 @@ function request_server_data($url, $fields = array())
 	return $result_data;
 }
 
-function validate_licence_information()
+function validate_website_config()
 {
 	$holder_name = trim(_post('holder_name'));
 	if (!strlen($holder_name))
 		throw new ValidationException('Please enter license holder name.', 'holder_name');
 
-	$serial_number = trim(_post('serial_number'));
-	if (!strlen($serial_number))
-		throw new ValidationException('Please enter the serial number.', 'serial_number');
+	$installation_key = trim(_post('installation_key'));
+	if (!strlen($installation_key))
+		throw new ValidationException('Please enter the serial number.', 'installation_key');
 
-	$hash = md5($serial_number.$holder_name);
+	$hash = md5($installation_key.$holder_name);
 
 	$data = array(
 		'url'=>base64_encode(get_root_url())
@@ -538,19 +538,19 @@ function validate_admin_user()
 	Install_Crypt::create()->encrypt_to_file(PATH_INSTALL.'/install_files/temp/params2.dat', $params, _post('install_key'));
 }
 
-function validate_encryption_key()
+function validate_encryption_code()
 {
 	global $APP_CONF;
 	global $Phpr_NoSession;		
 
-	$enc_key = trim(_post('encryption_key'));
+	$enc_key = trim(_post('encryption_code'));
 	$confirmation = trim(_post('confirmation'));
 
 	if (!strlen($enc_key))
-		throw new ValidationException('Please specify encryption key', 'encryption_key');
+		throw new ValidationException('Please specify encryption key', 'encryption_code');
 		
 	if (strlen($enc_key) < 6)
-		throw new ValidationException('The encryption key should be at least 6 characters in length.', 'encryption_key');
+		throw new ValidationException('The encryption key should be at least 6 characters in length.', 'encryption_code');
 		
 	if (!strlen($confirmation))
 		throw new ValidationException('Please specify encryption key confirmation', 'confirmation');

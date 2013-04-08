@@ -33,12 +33,12 @@ ul.bullets li { margin:.7em 0; }
 /* Partials */
 #partial_download_packages { padding-top: 5em; }
 #partial_requirements { padding-top: 1em; }
-#partial_database_configuration { padding-top: 2em; }
+#partial_database_config { padding-top: 2em; }
 #partial_admin_url { padding-top: 1.5em; }
 #partial_admin_user { padding-top:.75em; }
 #partial_admin_user p.lead { margin-bottom:1em; }
-#partial_encryption_key { padding-top: 1.5em; }
-#partial_licence_information { padding-top: 1.5em; }
+#partial_encryption_code { padding-top: 1.5em; }
+#partial_website_config { padding-top: 1.5em; }
 
 /* Additional */
 .alert { padding: .45em 2em .55em 2em; font-size: .9em; color: #666; background: #fbe8bc; filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fbe8bc', endColorstr='#f7d88c'); background: -moz-linear-gradient(top, #fbe8bc 0%, #f7d88c 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fbe8bc), color-stop(100%, #f7d88c)); background: -webkit-linear-gradient(top, #fbe8bc 0%, #f7d88c 100%); background: -o-linear-gradient(top, #fbe8bc 0%, #f7d88c 100%); background: -ms-linear-gradient(top, #fbe8bc 0%, #f7d88c 100%); background: linear-gradient(top, #fbe8bc 0%, #f7d88c 100%); -webkit-box-shadow: '0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8),  inset 0 -1px 0 rgba(0, 0, 0, 0.1)'; -moz-box-shadow: '0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8),  inset 0 -1px 0 rgba(0, 0, 0, 0.1)'; box-shadow: '0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8),  inset 0 -1px 0 rgba(0, 0, 0, 0.1)'; border-radius: 4px; }
@@ -69,6 +69,13 @@ form select {
     box-sizing: border-box;
     background: #ffffff;
 }
+
+form input.disabled,
+form textarea.disabled,
+form select.disabled {
+    background: #f0f0f0;
+}
+
 form .control {
     clear: both;
     line-height: 2.5;
@@ -152,7 +159,7 @@ form .control.full input[type="password"] {
 form label {
     display: block;
     float: left;
-    margin-right: .5em;
+    margin-right: 6px;
     line-height: inherit;
     text-align: right;
     vertical-align: top;
@@ -162,7 +169,7 @@ form label {
 form .control.full label,
 form .control.half label {
     width: 90px;
-    margin-right: .25em;
+    margin-right: 3px;
 }
 
 form textarea {
@@ -171,14 +178,13 @@ form textarea {
 form input[type="checkbox"],
 form input[type="radio"] {
     line-height: inherit;
-    margin-top: 0.35em;
+    margin-top: 4px;
     float: left;
 }
 form input[type="checkbox"] + label,
 form input[type="radio"] + label {
     line-height: inherit;
-    margin: 0 1.55em 0 0.55em;
-    margin-top: 0;
+    margin: 0 16px 0 6px;
     width: auto;
     min-width: auto;
 }
@@ -190,10 +196,22 @@ form .control.mini input {
     width: 80px;
     margin-right: 155px;
 }
-
 form .control.mini select {
     max-width: 235px;
 }
+
+form .control.checkbox {
+    padding: 0;
+    margin-left: 180px;
+}
+form .control.checkbox label, 
+form .control.checkbox input {
+    width: auto;    
+}
+form .control.checkbox input[type="checkbox"] {
+    margin-top: 13px;
+    margin-right: 6px;
+} 
 
 #download_progress {
     padding: 1em 0;

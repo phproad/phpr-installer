@@ -1,10 +1,10 @@
-<div id="partial_licence_information">
+<div id="partial_website_config">
 	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post" id="step_form">
-		<input type="hidden" name="step" value="licence_information" />
+		<input type="hidden" name="step" value="website_config" />
 		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
 		
-		<h1>Licence Information</h1>
-		<p>Please enter the licence holder name and serial number in the form below. For more information please see <a href="<?=URL_DOCS?>" target="_blank">the documentation</a>.</p>
+		<h1>Website Information</h1>
+		<p>Please enter your website name and installation key in the form below. For more information please see <a href="<?=URL_DOCS?>" target="_blank">the documentation</a>.</p>
 		<p><em>Important:</em> The information you provide will be sent to the <?=APP_NAME?> server to be validated. The operation could take several minutes depending on your Internet connection speed.</p>
 
 		<?php 
@@ -18,13 +18,18 @@
 
 		<fieldset>
 			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'holder_name') ?>">
-				<label for="holder_name">Holder Name</label>
+				<label for="holder_name">Website Name</label>
 				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('holder_name')) ?>" type="text" name="holder_name" id="holder_name" class="text" />
 			</div>
-			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'serial_number') ?>">
-				<label for="serial_number">Serial Number</label>
-				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('serial_number')) ?>" type="text" name="serial_number" id="serial_number" class="text" />
+			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'installation_key') ?>">
+				<label for="installation_key">Installation Key</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('installation_key')) ?>" type="text" name="installation_key" id="installation_key" class="text" />
 			</div>
+			<? if (!defined('DISABLE_KEYLESS_ENTRY')): ?>
+				<div class="control checkbox">
+					<label><input type="checkbox" name="generate_key" id="generate_key" value="1" /> I do not have an installation key.</label>
+				</div>
+			<? endif ?>
 		</fieldset>
 		
 		<div class="form-actions">
@@ -50,6 +55,13 @@
 		
 		$('#step_form').submit(function() {
 			$('#next_btn').attr('disabled', true);
+		});
+
+		$('#generate_key').click(function(){
+			if ($(this).is(':checked'))
+				$('#installation_key').attr('disabled', true).addClass('disabled');
+			else
+				$('#installation_key').attr('disabled', false).removeClass('disabled');
 		});
 	});
 </script>

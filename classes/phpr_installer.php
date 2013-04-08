@@ -97,6 +97,18 @@ class Phpr_Installer
         }
     }
 
+    public function get_file_hashes()
+    {
+        $params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
+        return (isset($params['file_hashes'])) ? $params['file_hashes'] : array();
+    }
+
+    public function get_hash()
+    {
+        $params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
+        return (isset($params['hash'])) ? $params['hash'] : array();
+    }
+
     public function show_installer_step()
     {
         $this_step = self::post('step');
@@ -108,25 +120,27 @@ class Phpr_Installer
             
             case 'request_package':
                 $package_name = self::post('package_name');
+                $core_modules = $this->get_file_hashes();
                 
                 if (!strlen(trim($package_name)))
                     throw new Exception('No packages to install');
 
-                if (!isset($this->core_modules[$package_name]))
+                if (!isset($core_modules[$package_name]))
                     throw new Exception('Unknown package with name '.$package_name);
 
-                Phpr_Installer_Manager::download_package($package_name, $this->core_modules[$package_name]);
+                Phpr_Installer_Manager::download_package($this->get_hash(), $package_name, $core_modules[$package_name]);
             break;
 
             case 'unzip_package':
                 sleep(1);
 
                 $package_name = self::post('package_name');
+                $core_modules = $this->get_file_hashes();
 
                 if (!strlen(trim($package_name)))
                     throw new Exception('No packages to to process');
 
-                if (!isset($this->core_modules[$package_name]))
+                if (!isset($core_modules[$package_name]))
                     throw new Exception('Unknown package with name '.$package_name);
 
                 Phpr_Installer_Manager::unzip_package($package_name);
@@ -146,26 +160,17 @@ class Phpr_Installer
 
             case 'requirements': 
             case 'install':
-                if (defined('URL_GATEWAY'))
-                    $this->render_partial('licence_information'); 
-                else
-                    $this->render_partial('download_packages'); 
+                $this->render_partial('website_config'); 
             break;
 
-            case 'download_packages':
-                $this->render_partial('database_configuration');
-            break;
-
-            case 'licence_information': 
-                if (!defined('URL_GATEWAY'))
-                    die($this->render_partial('download_packages'));
-
+            case 'website_config': 
                 $error = false;
                 try
                 {
-                    $install_params = Phpr_Installer_Manager::validate_licence_information(
+                    $install_params = Phpr_Installer_Manager::validate_website_config(
                         trim(self::post('holder_name')),
-                        trim(self::post('serial_number'))
+                        trim(self::post('installation_key')),
+                        trim(self::post('generate_key'))
                     );
 
                     Install_Crypt::create()->encrypt_to_file(
@@ -180,12 +185,16 @@ class Phpr_Installer
                 }
 
                 if ($error)
-                    $this->render_partial('licence_information', array('error' => $error)); 
+                    $this->render_partial('website_config', array('error' => $error)); 
                 else
-                    $this->render_partial('database_configuration');
+                    $this->render_partial('download_packages');
             break;
 
-            case 'database_configuration':
+            case 'download_packages':
+                $this->render_partial('database_config');
+            break;
+
+            case 'database_config':
                 $error = false;
                 try
                 {
@@ -208,7 +217,7 @@ class Phpr_Installer
                 }
 
                 if ($error)
-                    $this->render_partial('database_configuration', array('error' => $error)); 
+                    $this->render_partial('database_config', array('error' => $error)); 
                 else
                     $this->render_partial('admin_url');
             break;
@@ -235,10 +244,10 @@ class Phpr_Installer
                 if ($error)
                     $this->render_partial('admin_url', array('error' => $error)); 
                 else
-                    $this->render_partial('system_configuration');
+                    $this->render_partial('system_config');
             break;
 
-            case 'system_configuration': 
+            case 'system_config': 
                 $error = false;
                 try
                 {
@@ -260,7 +269,7 @@ class Phpr_Installer
                 }
 
                 if ($error)
-                    $this->render_partial('system_configuration', array('error' => $error)); 
+                    $this->render_partial('system_config', array('error' => $error)); 
                 else
                     $this->render_partial('admin_user');
             break;
@@ -292,15 +301,15 @@ class Phpr_Installer
                 if ($error)
                     $this->render_partial('admin_user', array('error' => $error)); 
                 else
-                    $this->render_partial('encryption_key');
+                    $this->render_partial('encryption_code');
             break;
             
-            case 'encryption_key':
+            case 'encryption_code':
                 $error = false;
                 try
                 {
-                    $install_params = Phpr_Installer_Manager::validate_encryption_key(
-                        trim(self::post('encryption_key')),
+                    $install_params = Phpr_Installer_Manager::validate_encryption_code(
+                        trim(self::post('encryption_code')),
                         trim(self::post('confirmation'))
                     );
                     
@@ -318,7 +327,7 @@ class Phpr_Installer
                 }
 
                 if ($error)
-                    $this->render_partial('encryption_key', array('error' => $error)); 
+                    $this->render_partial('encryption_code', array('error' => $error)); 
                 else
                 {
                     $files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');

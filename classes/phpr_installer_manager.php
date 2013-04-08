@@ -15,18 +15,18 @@ class Phpr_Installer_Manager
         return "'" . implode("','", array_keys($obj->core_modules)) . "'";
     }
 
-    public static function download_package($name, $package_url)
+    public static function download_package($hash, $code, $downloaded_hash)
     {
-        return;// @disabled
         $tmp_file = self::get_package_file_path($name);
-        $result = Phpr_Installer_Manager::request_server_data($package_url);
+        $result = self::request_gateway_data('get_file/'.$hash.'/'.$code);
         
         if (trim($result) == "")
             throw new Exception("Package is empty: ".$name);
 
+        $tmp_save_result = false;
         try
         {
-            $tmp_save_result = @file_put_contents($tmp_file, $result);
+            $tmp_save_result = @file_put_contents($tmp_file, $result['data']);
         }
         catch (Exception $ex)
         {
@@ -35,6 +35,15 @@ class Phpr_Installer_Manager
 
         if (!$tmp_save_result)
             throw new Exception("Unable create temporary file in ".$tmp_path);
+
+        $downloaded_hash = md5_file($tmp_file);
+        if ($downloaded_hash != $file_hash) {
+            
+            if (file_exists($tmp_file))
+                @unlink($tmp_file);
+
+            throw new Exception("Downloaded archive is corrupt. Please try the install again.");
+        }
 
         return $tmp_file;
     }
@@ -265,24 +274,28 @@ class Phpr_Installer_Manager
         return $result_data;
     }
 
-    public function validate_licence_information($holder_name, $serial_number)
+    public function validate_website_config($holder_name, $installation_key, $generate_key)
     {
         if (!strlen($holder_name))
             throw new ValidationException('Please enter licence holder name.', 'holder_name');
 
-        if (!strlen($serial_number))
-            throw new ValidationException('Please enter the serial number.', 'serial_number');
+        if (!strlen($installation_key) && (defined('DISABLE_KEYLESS_ENTRY') || !$generate_key))
+            throw new ValidationException('Please enter installation key.', 'installation_key');
 
-        $hash = md5($serial_number.$holder_name);
+        if ($generate_key)
+            $hash = 'keyless';
+        else
+            $hash = md5($installation_key.$holder_name);
 
         $data = array(
-            'url'=>base64_encode($this->get_root_url())
+            'url' => base64_encode($this->get_root_url())
         );
 
-        $result = self::request_gateway_data('get_install_hashes/'.$hash, $data);
+        $result = self::request_gateway_data('get-install-hashes/'.$hash, $data);
         if (!is_array($result['data']))
             throw new Exception("Invalid server response");
 
+        $birthmark = $result['data']['birthmark'];
         $file_hashes = $result['data']['file_hashes'];
         $licence_key = $result['data']['key'];
         $application_name = $result['data']['application_name'];
@@ -291,6 +304,8 @@ class Phpr_Installer_Manager
         $theme_name = $result['data']['theme_name'];
         $vendor_name = $result['data']['vendor_name'];
         $vendor_url = $result['data']['vendor_url'];
+
+        /*
 
         $tmp_path = PATH_INSTALL_APP.'/temp';
         if (!is_writable($tmp_path))
@@ -336,9 +351,11 @@ class Phpr_Installer_Manager
             
             throw $ex;
         }
+        */
 
         $install_params = array(
             'hash'        => $hash,
+            'birthmark'   => $birthmark,
             'key'         => $licence_key,
             'holder'      => $holder_name,
             'app_name'    => $application_name,
@@ -346,7 +363,8 @@ class Phpr_Installer_Manager
             'theme_name'  => $theme_name,
             'theme_code'  => $theme_code,
             'vendor_name' => $vendor_name,
-            'vendor_url'  => $vendor_url
+            'vendor_url'  => $vendor_url,
+            'file_hashes' => $file_hashes
         );
 
         return $install_params;
@@ -477,13 +495,13 @@ class Phpr_Installer_Manager
         return $install_params;
     }
 
-    public function validate_encryption_key($enc_key, $confirmation)
+    public function validate_encryption_code($enc_key, $confirmation)
     {
         if (!strlen($enc_key))
-            throw new ValidationException('Please specify encryption key', 'encryption_key');
+            throw new ValidationException('Please specify encryption key', 'encryption_code');
             
         if (strlen($enc_key) < 6)
-            throw new ValidationException('The encryption key should be at least 6 characters in length.', 'encryption_key');
+            throw new ValidationException('The encryption key should be at least 6 characters in length.', 'encryption_code');
             
         if (!strlen($confirmation))
             throw new ValidationException('Please specify encryption key confirmation', 'confirmation');

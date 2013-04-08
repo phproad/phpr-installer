@@ -1,10 +1,10 @@
-<div id="partial_encryption_key">
+<div id="partial_encryption_code">
 	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post" id="step_form">
-		<input type="hidden" name="step" value="encryption_key" />
+		<input type="hidden" name="step" value="encryption_code" />
 		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
 		
-		<h1>Encryption Key</h1>
-		<p class="lead">Please choose an encryption key for protecting sensitive information, such as user passwords.</p>
+		<h1>Encryption Code</h1>
+		<p class="lead">Please create a special encryption code for protecting sensitive information, such as user passwords.</p>
 
 
 		<?php 
@@ -16,18 +16,18 @@
 		<?php endif ?>
 
 		<fieldset>
-			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'encryption_key') ?>">
-				<label for="encryption_key">Encryption Key</label>
-				<input autocomplete="off" type="password" name="encryption_key" id="encryption_key" class="text" />
-				<p class="tip">The encryption key should be at least 6 characters in length.</p>
+			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'encryption_code') ?>">
+				<label for="encryption_code">Encryption Code</label>
+				<input autocomplete="off" type="password" name="encryption_code" id="encryption_code" class="text" />
+				<p class="tip">The encryption code should be at least 6 characters in length.</p>
 			</li>
 			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'confirmation') ?>">
-				<label for="encryption_key">Key Confirmation</label>
+				<label for="encryption_code">Code Confirmation</label>
 				<input autocomplete="off" type="password" name="confirmation" id="confirmation" class="text" />
 			</div>
 		</fieldset>
 
-		<p><em>Important:</em> Remember the encryption key because it may be needed if you want to reinstall or move to another server. Without the encryption key it will not be possible to decrypt data and sensitive information could be lost.</p>
+		<p><em>Important:</em> Remember the encryption code because it may be needed if you want to reinstall or move to another server. Without the encryption code it will not be possible to decrypt data and sensitive information could be lost.</p>
 
         <div class="form-actions">
             <div class="pull-right">
@@ -45,7 +45,7 @@
 <script type="text/javascript">
 	$(document).ready(function(){ 
 		<?php if (!($error_field)): ?>
-			$('#encryption_key').focus();
+			$('#encryption_code').focus();
 		<?php else: ?>
 			$('#<?php echo $error_field ?>').focus();
 		<?php endif ?>
