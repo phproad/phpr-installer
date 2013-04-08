@@ -305,15 +305,15 @@ function request_server_data($url, $fields = array())
 
 function validate_website_config()
 {
-	$holder_name = trim(_post('holder_name'));
-	if (!strlen($holder_name))
-		throw new ValidationException('Please enter license holder name.', 'holder_name');
+	$website_name = trim(_post('website_name'));
+	if (!strlen($website_name))
+		throw new ValidationException('Please enter license holder name.', 'website_name');
 
 	$installation_key = trim(_post('installation_key'));
 	if (!strlen($installation_key))
 		throw new ValidationException('Please enter the serial number.', 'installation_key');
 
-	$hash = md5($installation_key.$holder_name);
+	$hash = md5($installation_key.$website_name);
 
 	$data = array(
 		'url'=>base64_encode(get_root_url())
@@ -378,7 +378,7 @@ function validate_website_config()
 	$install_hashes = array(
 		'hash'=>$hash,
 		'key'=>$license_key,
-		'holder'=>$holder_name
+		'holder'=>$website_name
 	);
 
 	$app_info = array(

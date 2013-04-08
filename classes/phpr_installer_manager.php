@@ -12,14 +12,14 @@ class Phpr_Installer_Manager
     public static function get_package_list()
     {
         $obj = Phpr_Installer::create();
-        return "'" . implode("','", array_keys($obj->core_modules)) . "'";
+        return "'" . implode("','", array_keys($obj->get_file_hashes())) . "'";
     }
 
     public static function download_package($hash, $code, $downloaded_hash)
     {
         $tmp_file = self::get_package_file_path($name);
         $result = self::request_gateway_data('get_file/'.$hash.'/'.$code);
-        
+
         if (trim($result) == "")
             throw new Exception("Package is empty: ".$name);
 
@@ -274,10 +274,10 @@ class Phpr_Installer_Manager
         return $result_data;
     }
 
-    public function validate_website_config($holder_name, $installation_key, $generate_key)
+    public function validate_website_config($website_name, $installation_key, $generate_key)
     {
-        if (!strlen($holder_name))
-            throw new ValidationException('Please enter licence holder name.', 'holder_name');
+        if (!strlen($website_name))
+            throw new ValidationException('Please enter your website name.', 'website_name');
 
         if (!strlen($installation_key) && (defined('DISABLE_KEYLESS_ENTRY') || !$generate_key))
             throw new ValidationException('Please enter installation key.', 'installation_key');
@@ -285,7 +285,7 @@ class Phpr_Installer_Manager
         if ($generate_key)
             $hash = 'keyless';
         else
-            $hash = md5($installation_key.$holder_name);
+            $hash = md5($installation_key.$website_name);
 
         $data = array(
             'url' => base64_encode($this->get_root_url())
@@ -354,17 +354,18 @@ class Phpr_Installer_Manager
         */
 
         $install_params = array(
-            'hash'        => $hash,
-            'birthmark'   => $birthmark,
-            'key'         => $licence_key,
-            'holder'      => $holder_name,
-            'app_name'    => $application_name,
-            'app_image'   => $application_image,
-            'theme_name'  => $theme_name,
-            'theme_code'  => $theme_code,
-            'vendor_name' => $vendor_name,
-            'vendor_url'  => $vendor_url,
-            'file_hashes' => $file_hashes
+            'hash'         => $hash,
+            'birthmark'    => $birthmark,
+            'key'          => $licence_key,
+            'holder'       => $website_name,
+            'app_name'     => $application_name,
+            'app_image'    => $application_image,
+            'theme_name'   => $theme_name,
+            'theme_code'   => $theme_code,
+            'vendor_name'  => $vendor_name,
+            'vendor_url'   => $vendor_url,
+            'file_hashes'  => $file_hashes,
+            'website_name' => $website_name
         );
 
         return $install_params;

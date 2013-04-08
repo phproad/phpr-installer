@@ -21,7 +21,7 @@ var Phpr_Downloader = (function(dl, $){
 
     });
 
-    dl.get_packages = function(url, packages) {
+    dl.get_packages = function(url, packages, install_key) {
 
         dl.url = url;
         dl.el_msg.addClass('loading');
@@ -34,7 +34,8 @@ var Phpr_Downloader = (function(dl, $){
                 dl.push_progress_forward('Requesting package: ' + package);
                 return $.post(dl.url, {
                     step: 'request_package', 
-                    package_name: package
+                    package_name: package,
+                    install_key: install_key
                 });
             });
 
@@ -42,7 +43,8 @@ var Phpr_Downloader = (function(dl, $){
                 dl.push_progress_forward('Uncompressing package: ' + package);
                 return $.post(dl.url, {
                     step: 'unzip_package', 
-                    package_name: package
+                    package_name: package,
+                    install_key: install_key
                 });
             });
         });

@@ -88,7 +88,8 @@ class Phpr_Installer
         } 
         catch (Exception $ex)
         {
-            Phpr_Installer_Manager::install_cleanup();
+            // @TODO
+            //Phpr_Installer_Manager::install_cleanup();
             
             if ($this->check_remote_event())
                 $this->throw_ajax_error($ex->getMessage());
@@ -99,12 +100,14 @@ class Phpr_Installer
 
     public function get_file_hashes()
     {
+        $crypt = Install_Crypt::create();
         $params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
         return (isset($params['file_hashes'])) ? $params['file_hashes'] : array();
     }
 
     public function get_hash()
     {
+        $crypt = Install_Crypt::create();
         $params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
         return (isset($params['hash'])) ? $params['hash'] : array();
     }
@@ -112,7 +115,6 @@ class Phpr_Installer
     public function show_installer_step()
     {
         $this_step = self::post('step');
-
         switch ($this_step)
         {
             // AJAX actions
@@ -121,6 +123,7 @@ class Phpr_Installer
             case 'request_package':
                 $package_name = self::post('package_name');
                 $core_modules = $this->get_file_hashes();
+                $hash = $this->get_hash();
                 
                 if (!strlen(trim($package_name)))
                     throw new Exception('No packages to install');
@@ -128,7 +131,7 @@ class Phpr_Installer
                 if (!isset($core_modules[$package_name]))
                     throw new Exception('Unknown package with name '.$package_name);
 
-                Phpr_Installer_Manager::download_package($this->get_hash(), $package_name, $core_modules[$package_name]);
+                Phpr_Installer_Manager::download_package($hash, $package_name, $core_modules[$package_name]);
             break;
 
             case 'unzip_package':
@@ -168,7 +171,7 @@ class Phpr_Installer
                 try
                 {
                     $install_params = Phpr_Installer_Manager::validate_website_config(
-                        trim(self::post('holder_name')),
+                        trim(self::post('website_name')),
                         trim(self::post('installation_key')),
                         trim(self::post('generate_key'))
                     );
@@ -177,7 +180,7 @@ class Phpr_Installer
                         PATH_INSTALL_APP.'/temp/params1.dat', 
                         $install_params, 
                         self::post('install_key')
-                    );                    
+                    );
                 }
                 catch (Exception $ex)
                 {

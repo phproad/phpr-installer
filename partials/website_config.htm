@@ -17,9 +17,9 @@
 		<?php endif ?>
 
 		<fieldset>
-			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'holder_name') ?>">
-				<label for="holder_name">Website Name</label>
-				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('holder_name')) ?>" type="text" name="holder_name" id="holder_name" class="text" />
+			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'website_name') ?>">
+				<label for="website_name">Website Name</label>
+				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('website_name')) ?>" type="text" name="website_name" id="website_name" class="text" />
 			</div>
 			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'installation_key') ?>">
 				<label for="installation_key">Installation Key</label>
@@ -48,7 +48,7 @@
 <script type="text/javascript">
 	$(document).ready(function(){ 
 		<?php if (!($error_field)): ?>
-			$('#holder_name').focus();
+			$('#website_name').focus();
 		<?php else: ?>
 			$('#<?php echo $error_field ?>').focus();
 		<?php endif ?>
