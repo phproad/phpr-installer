@@ -17,11 +17,11 @@ class Phpr_Installer_Manager
 
     public static function download_package($hash, $code, $downloaded_hash)
     {
-        $tmp_file = self::get_package_file_path($name);
-        $result = self::request_gateway_data('get_file/'.$hash.'/'.$code);
+        $tmp_file = self::get_package_file_path($code);
+        $result = self::request_gateway_data('get-install-file/'.$hash.'/'.$code);
 
         if (trim($result) == "")
-            throw new Exception("Package is empty: ".$name);
+            throw new Exception("Package is empty: ".$code);
 
         $tmp_save_result = false;
         try
