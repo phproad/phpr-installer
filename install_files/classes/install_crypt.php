@@ -26,6 +26,9 @@ class Install_Crypt
 	
 	public function encrypt_to_file($path, $data, $key)
 	{
+		if (!is_writable($path))
+			@mkdir(dirname($path));
+
 		$data = $this->encrypt($data, $key);
 		if (!@file_put_contents($path, $data))
 			throw new Exception('Error creating data file. Please make sure that the installation directory and all its subdirectories are writable for PHP.');
