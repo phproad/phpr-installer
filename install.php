@@ -10,9 +10,9 @@
  */
 
 define('APP_NAME', 'PHP Road'); 
-define('URL_TERMS', 'http://localhost:81/phproad/resources/phpr-license.txt');
+define('URL_TERMS', 'http://phproad.com/resources/phpr-license.txt');
 define('URL_DOCS', 'http://phproad.com/docs');
-define('URL_GATEWAY', 'http://localhost:81/phproad/phpr-gateway');
+define('URL_GATEWAY', 'http://phproad.com/phpr-gateway');
 
 $is_php4 = version_compare(PHP_VERSION, '5.0.0', '<');
 define('DS', DIRECTORY_SEPARATOR);
