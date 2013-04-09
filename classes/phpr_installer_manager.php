@@ -15,7 +15,7 @@ class Phpr_Installer_Manager
         return "'" . implode("','", array_keys($obj->get_file_hashes())) . "'";
     }
 
-    public static function download_package($hash, $code, $downloaded_hash)
+    public static function download_package($hash, $code, $expected_hash)
     {
         $tmp_file = self::get_package_file_path($code);
         $result = self::request_gateway_data('get-install-file/'.$hash.'/'.$code);
@@ -30,11 +30,13 @@ class Phpr_Installer_Manager
             throw new Exception("Unable create temporary file in ".$tmp_file);
         }
 
+
         if (!$tmp_save_result)
             throw new Exception("Unable create temporary file in ".$tmp_file);
 
         $downloaded_hash = md5_file($tmp_file);
-        if ($downloaded_hash != $file_hash) {
+
+        if ($downloaded_hash != $expected_hash) {
             
             if (file_exists($tmp_file))
                 @unlink($tmp_file);
