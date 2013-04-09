@@ -65,9 +65,14 @@ class Phpr_Installer_Manager
         if (!$tmp_module_file_path)
             throw new Exception("Package ".$name." does not appear to be a valid module.");
 
-
-        $tmp_module_path = dirname(dirname($tmp_module_file_path));
-        $module_path = PATH_INSTALL.DS.'modules'.DS.$name;
+        if ($name != 'core') {
+            $tmp_module_path = dirname(dirname($tmp_module_file_path));
+            $module_path = PATH_INSTALL.DS.'modules'.DS.$name;
+        } else {
+            // Core package must contain the bootstrap/framework files
+            $tmp_module_path = dirname(dirname(dirname(dirname($tmp_module_file_path))));
+            $module_path = PATH_INSTALL;
+        }
         
         if (!file_exists($module_path))
             @mkdir($module_path, 0, true);
