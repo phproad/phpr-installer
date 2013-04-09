@@ -9,7 +9,7 @@
  * 
  */
 
-define('APP_NAME', 'PHP Road'); 
+define('APP_NAME', 'PHPRoad'); 
 define('URL_TERMS', 'http://phproad.com/resources/phpr-license.txt');
 define('URL_DOCS', 'http://phproad.com/docs');
 define('URL_GATEWAY', 'http://phproad.com/phpr-gateway');
@@ -22,7 +22,7 @@ define('PATH_INSTALL_APP', str_replace("\\", "/", realpath(dirname(__FILE__)."/"
 
 if (!PHP4_DETECTED) 
 {
-    require "classes/phpr_installer.php";
+    require "install_files/classes/phpr_installer.php";
     $installer = Phpr_Installer::create();
 
     if ($installer->check_remote_event())

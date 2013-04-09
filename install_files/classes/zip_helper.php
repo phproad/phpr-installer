@@ -32,7 +32,7 @@ class Zip_Helper
 		if (self::$_initialized)
 			return;
 		
-		require_once(PATH_INSTALL_APP."/classes/pclzip.lib.php");
+		require_once(PATH_INSTALL_APP."/install_files/classes/pclzip.lib.php");
 
 		if ( !defined('PCLZIP_TEMPORARY_DIR') )
 		{

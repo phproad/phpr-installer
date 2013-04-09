@@ -43,10 +43,10 @@ class Phpr_Installer
     {
         $str = array();
         $str[] = '<link href="http://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" type="text/css">';
-        $str[] = '<link rel="stylesheet" href="'.self::find_public_path(PATH_INSTALL_APP.'/assets/css/installer.css').'" type="text/css" />';
-        $str[] = '<script src="'.self::find_public_path(PATH_INSTALL_APP.'/assets/javascript/jquery.js').'"></script>';
-        $str[] = '<script src="'.self::find_public_path(PATH_INSTALL_APP.'/assets/javascript/progressbar.js').'"></script>';
-        $str[] = '<script src="'.self::find_public_path(PATH_INSTALL_APP.'/assets/javascript/download.js').'"></script>';
+        $str[] = '<link rel="stylesheet" href="'.self::find_public_path(PATH_INSTALL_APP.'/install_files/assets/css/installer.css').'" type="text/css" />';
+        $str[] = '<script src="'.self::find_public_path(PATH_INSTALL_APP.'/install_files/assets/javascript/jquery.js').'"></script>';
+        $str[] = '<script src="'.self::find_public_path(PATH_INSTALL_APP.'/install_files/assets/javascript/progressbar.js').'"></script>';
+        $str[] = '<script src="'.self::find_public_path(PATH_INSTALL_APP.'/install_files/assets/javascript/download.js').'"></script>';
         return implode(PHP_EOL, $str);
     }
 
@@ -423,9 +423,9 @@ class Phpr_Installer
 
     public function render_partial($name, $params = array())
     {
-        $file = PATH_INSTALL_APP.'/partials/'.$name.'.htm';
+        $file = PATH_INSTALL_APP.'/install_files/partials/'.$name.'.htm';
         if (!file_exists($file))
-            throw new Exception("Partial not found: $name");
+            throw new Exception("Partial not found: ".$name);
 
         extract($params);
         include $file;
