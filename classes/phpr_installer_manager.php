@@ -20,9 +20,6 @@ class Phpr_Installer_Manager
         $tmp_file = self::get_package_file_path($code);
         $result = self::request_gateway_data('get-install-file/'.$hash.'/'.$code);
 
-        if (trim($result) == "")
-            throw new Exception("Package is empty: ".$code);
-
         $tmp_save_result = false;
         try
         {
@@ -30,11 +27,11 @@ class Phpr_Installer_Manager
         }
         catch (Exception $ex)
         {
-            throw new Exception("Unable create temporary file in ".$tmp_path);
+            throw new Exception("Unable create temporary file in ".$tmp_file);
         }
 
         if (!$tmp_save_result)
-            throw new Exception("Unable create temporary file in ".$tmp_path);
+            throw new Exception("Unable create temporary file in ".$tmp_file);
 
         $downloaded_hash = md5_file($tmp_file);
         if ($downloaded_hash != $file_hash) {
@@ -254,7 +251,6 @@ class Phpr_Installer_Manager
     public static function request_gateway_data($url, $fields = array())
     {
         $result = self::request_server_data(URL_GATEWAY.'/'.$url, $fields);
-
         $result_data = false;
         try
         {
@@ -264,11 +260,10 @@ class Phpr_Installer_Manager
         {
             throw new Exception("Invalid response from the ".APP_NAME." server.");
         }
-
         if ($result_data === false)
             throw new Exception("Invalid response from the ".APP_NAME." server.");
-            
-        if ($result_data['error'])
+
+        if (isset($result_data['error']) && $result_data['error'])
             throw new Exception($result_data['error']);
             
         return $result_data;
