@@ -6,7 +6,6 @@ class Phpr_Installer_Manager
 	private static $install_key = null;
 
 	const uri_get_install_hashes = 'install/hashes/get';
-	const uri_get_install_package = 'install/package/get';
 	const uri_get_install_file = 'install/file/get';
 
 	/**
