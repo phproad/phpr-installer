@@ -51,16 +51,16 @@
 		</fieldset>
 
 
-	    <div class="form-actions">
-	        <div class="pull-right">
+		<div class="form-actions">
+			<div class="pull-right">
 				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" />
-	        </div>
-	        <?php if (isset($error)): ?>
-	            <div class="pull-right">
-	                <div class="alert error"><?php echo Phpr_Installer::h($error->getMessage()) ?></div>
-	            </div>
-	        <?php endif ?>      
-	    </div>
+			</div>
+			<?php if (isset($error)): ?>
+				<div class="pull-right">
+					<div class="alert error"><?php echo Phpr_Installer::h($error->getMessage()) ?></div>
+				</div>
+			<?php endif ?>
+		</div>
 
 	</form>
 </div>
