@@ -105,17 +105,12 @@ class Phpr_Installer_Manager
 	 * Helpers
 	 */
 
-	public static function request_server_data($url, $fields = array())
+	public static function request_server_data($url, $params = array())
 	{
 		$result = null;
 		try
 		{
-			$poststring = array();
-
-			foreach($fields as $key=>$val)
-				$poststring[] = urlencode($key)."=".urlencode($val); 
-
-			$poststring = implode('&', $poststring);
+			$post_data = http_build_query($params, '', '&');
 
 			$ch = curl_init(); 
 			curl_setopt($ch, CURLOPT_URL, $url);
@@ -124,7 +119,7 @@ class Phpr_Installer_Manager
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION , true);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $poststring);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 			$result = curl_exec($ch);
 		} 
 		catch (Exception $ex) {}
@@ -259,9 +254,9 @@ class Phpr_Installer_Manager
 	 * Gateway Specific 
 	 */
 
-	public static function request_gateway_data($url, $fields = array())
+	public static function request_gateway_data($url, $params = array())
 	{
-		$result = self::request_server_data(URL_GATEWAY.'/'.$url, $fields);
+		$result = self::request_server_data(URL_GATEWAY.'/'.$url, $params);
 		$result_data = false;
 
 		try
