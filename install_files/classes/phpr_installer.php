@@ -171,7 +171,7 @@ class Phpr_Installer
                 try
                 {
                     $install_params = Phpr_Installer_Manager::validate_website_config(
-                        trim(self::post('website_name')),
+                        trim(self::post('license_name')),
                         trim(self::post('installation_key')),
                         trim(self::post('generate_key'))
                     );

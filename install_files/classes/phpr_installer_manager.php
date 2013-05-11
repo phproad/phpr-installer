@@ -5,6 +5,10 @@ class Phpr_Installer_Manager
 
     private static $install_key = null;
 
+    const uri_get_install_hashes = 'install/hashes/get';
+    const uri_get_install_package = 'install/package/get';
+    const uri_get_install_file = 'install/file/get';
+
     /**
      * Package Specific
      */ 
@@ -18,7 +22,7 @@ class Phpr_Installer_Manager
     public static function download_package($hash, $code, $expected_hash)
     {
         $tmp_file = self::get_package_file_path($code);
-        $result = self::request_gateway_data('get-install-file/'.$hash.'/'.$code);
+        $result = self::request_gateway_data(self::uri_get_install_file.'/'.$hash.'/'.$code);
 
         $tmp_save_result = false;
         try
@@ -259,9 +263,10 @@ class Phpr_Installer_Manager
     {
         $result = self::request_server_data(URL_GATEWAY.'/'.$url, $fields);
         $result_data = false;
+
         try
         {
-            $result_data = @unserialize($result);
+            $result_data = @json_decode($result);
         } 
         catch (Exception $ex) 
         {
@@ -270,16 +275,16 @@ class Phpr_Installer_Manager
         if ($result_data === false)
             throw new Exception("Invalid response from the ".APP_NAME." server.");
 
-        if (isset($result_data['error']) && $result_data['error'])
-            throw new Exception($result_data['error']);
+        if (isset($result_data->error) && $result_data->error)
+            throw new Exception($result_data->error);
             
         return $result_data;
     }
 
-    public function validate_website_config($website_name, $installation_key, $generate_key)
+    public function validate_website_config($license_name, $installation_key, $generate_key)
     {
-        if (!strlen($website_name))
-            throw new ValidationException('Please enter your website name.', 'website_name');
+        if (!strlen($license_name))
+            throw new ValidationException('Please enter your website name.', 'license_name');
 
         if (!strlen($installation_key) && (defined('DISABLE_KEYLESS_ENTRY') || !$generate_key))
             throw new ValidationException('Please enter installation key.', 'installation_key');
@@ -287,25 +292,28 @@ class Phpr_Installer_Manager
         if ($generate_key)
             $hash = 'keyless';
         else
-            $hash = md5($installation_key.$website_name);
+            $hash = md5($installation_key.$license_name);
 
-        $data = array(
+        $params = array(
+            'hash' => $hash,
             'url' => base64_encode($this->get_root_url())
         );
 
-        $result = self::request_gateway_data('get-install-hashes/'.$hash, $data);
-        if (!is_array($result['data']))
+        $result = self::request_gateway_data(self::uri_get_install_hashes, $params);
+        if (!$result->data)
             throw new Exception("Invalid server response");
 
-        $birthmark = $result['data']['birthmark'];
-        $file_hashes = $result['data']['file_hashes'];
-        $licence_key = $result['data']['key'];
-        $application_name = $result['data']['application_name'];
-        $application_image = $result['data']['application_image'];
-        $theme_code = $result['data']['theme_code'];
-        $theme_name = $result['data']['theme_name'];
-        $vendor_name = $result['data']['vendor_name'];
-        $vendor_url = $result['data']['vendor_url'];
+        $data = $result->data;
+
+        $birthmark = $data->birthmark;
+        $file_hashes = $data->file_hashes;
+        $licence_key = $data->key;
+        $application_name = $data->application_name;
+        $application_image = $data->application_image;
+        $theme_code = $data->theme_code;
+        $theme_name = $data->theme_name;
+        $vendor_name = $data->vendor_name;
+        $vendor_url = $data->vendor_url;
 
         /*
 
@@ -320,7 +328,7 @@ class Phpr_Installer_Manager
             foreach ($file_hashes as $code=>$file_hash)
             {
                 $tmp_file = $tmp_path.'/'.$code.'.arc';
-                $result = self::request_gateway_data('get_file/'.$hash.'/'.$code);
+                $result = self::request_gateway_data(self::uri_get_install_file.'/'.$hash.'/'.$code);
 
                 $tmp_save_result = false;
                 try
@@ -359,15 +367,14 @@ class Phpr_Installer_Manager
             'hash'         => $hash,
             'birthmark'    => $birthmark,
             'key'          => $licence_key,
-            'holder'       => $website_name,
+            'license_name' => $license_name,
             'app_name'     => $application_name,
             'app_image'    => $application_image,
             'theme_name'   => $theme_name,
             'theme_code'   => $theme_code,
             'vendor_name'  => $vendor_name,
             'vendor_url'   => $vendor_url,
-            'file_hashes'  => $file_hashes,
-            'website_name' => $website_name
+            'file_hashes'  => $file_hashes
         );
 
         return $install_params;
