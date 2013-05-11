@@ -100,155 +100,6 @@ class Phpr_Installer_Manager
 
 		return $tmp_file;
 	}
-	
-	/**
-	 * Helpers
-	 */
-
-	public static function request_server_data($url, $params = array())
-	{
-		$result = null;
-		try
-		{
-			$post_data = http_build_query($params, '', '&');
-
-			$ch = curl_init(); 
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION , true);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-			$result = curl_exec($ch);
-		} 
-		catch (Exception $ex) {}
-
-		if (!$result || !strlen($result))
-			throw new Exception("Unable to connect to the ".APP_NAME." server.");
-
-		return $result;
-	}        
-
-	public static function extract_file($src_file, $dest)
-	{
-		if (!class_exists('ZipArchive'))
-			throw new Exception("Your PHP installation does not have the Zip library. You can install it by recompiling PHP with the --enable-zip option or check the install documentation for alternate instructions.");
-		  
-		$zip = new ZipArchive;
-		$response = $zip->open($src_file);
-		if ($response === TRUE) 
-		{
-			$zip->extractTo($dest);
-			$zip->close();
-		}
-		else
-		{
-			throw new Exception("Cannot uncompress package, Code: ".$response);
-		}
-	}
-
-	public static function find_file($path, $file_match) 
-	{ 
-		$iterator = new DirectoryIterator($path);
-		foreach ($iterator as $file) 
-		{ 
-			if ($file->isDot())
-				continue;
-			else if ($file->isDir()) 
-			{
-				$result = self::find_file($file->getPathname(), $file_match); 
-				if ($result !== null)
-					return $result;
-			}
-			else if ($file_match == $file->getFilename())
-				return $file->getPathname();
-		}
-		
-		return null;
-	}
-
-	public static function copy_directory($source, $destination, &$options = array())
-	{
-		$ignore_files = isset($options['ignore']) ? $options['ignore'] : array();
-		$overwrite_files = isset($options['overwrite']) ? $options['overwrite'] : true;
-
-		if (is_dir($source))
-		{
-			if (!file_exists($destination))
-				@mkdir($destination);
-
-			$dir_obj = dir($source);
-
-			while (($file = $dir_obj->read()) !== false) 
-			{
-				if ($file == '.' || $file == '..')
-					continue;
-
-				if (in_array($file, $ignore_files))
-					continue;
-
-				$dir_path = $source . '/' . $file;
-				if (!is_dir($dir_path))
-				{
-					$dest_path = $destination . '/' . $file;
-					if ($overwrite_files || !file_exists($dest_path))
-						copy($dir_path, $dest_path);
-				}
-				else
-				{
-					self::copy_directory($dir_path, $destination . '/' . $file, $options);
-				}
-			}
-
-			$dir_obj->close();
-		} 
-		else 
-		{
-			copy($source, $destination);
-		}
-	}    
-
-	public static function make_dir($path, $permissions)
-	{
-		if (!file_exists($path))
-			@mkdir($path);
-		
-		@chmod($path, $permissions);
-	}
-
-	public static function deny_dir_access($path, $permissions)
-	{
-		$path .= '/.htaccess';
-		
-		$data = "order deny,allow\ndeny from all";
-		@file_put_contents($path, $data);
-		
-		@chmod($path, $permissions);
-	}
-
-	public static function delete_recursive($path) 
-	{
-		if (!is_dir($path)) 
-			return false;
-
-		$iterator = new DirectoryIterator($path);
-		foreach ($iterator as $file) 
-		{
-			if ($file->isDot())
-				continue;
-
-			$dir_path = $file->getPathname();
-
-			if (!is_link($dir_path) && $file->isDir()) 
-				self::delete_recursive($dir_path);
-			else
-				@unlink($dir_path);
-		}
-		
-		@rmdir($path);
-		return true;
-	}
 
 	/**
 	 * Gateway Specific 
@@ -784,4 +635,153 @@ class Phpr_Installer_Manager
 
 		$d->close();
 	}
+
+	/**
+	 * Helpers
+	 */
+
+	public static function request_server_data($url, $params = array())
+	{
+		$result = null;
+		try
+		{
+			$post_data = http_build_query($params, '', '&');
+
+			$ch = curl_init(); 
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION , true);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+			$result = curl_exec($ch);
+		} 
+		catch (Exception $ex) {}
+
+		if (!$result || !strlen($result))
+			throw new Exception("Unable to connect to the ".APP_NAME." server.");
+
+		return $result;
+	}        
+
+	public static function extract_file($src_file, $dest)
+	{
+		if (!class_exists('ZipArchive'))
+			throw new Exception("Your PHP installation does not have the Zip library. You can install it by recompiling PHP with the --enable-zip option or check the install documentation for alternate instructions.");
+		  
+		$zip = new ZipArchive;
+		$response = $zip->open($src_file);
+		if ($response === TRUE) 
+		{
+			$zip->extractTo($dest);
+			$zip->close();
+		}
+		else
+		{
+			throw new Exception("Cannot uncompress package, Code: ".$response);
+		}
+	}
+
+	public static function find_file($path, $file_match) 
+	{ 
+		$iterator = new DirectoryIterator($path);
+		foreach ($iterator as $file) 
+		{ 
+			if ($file->isDot())
+				continue;
+			else if ($file->isDir()) 
+			{
+				$result = self::find_file($file->getPathname(), $file_match); 
+				if ($result !== null)
+					return $result;
+			}
+			else if ($file_match == $file->getFilename())
+				return $file->getPathname();
+		}
+		
+		return null;
+	}
+
+	public static function copy_directory($source, $destination, &$options = array())
+	{
+		$ignore_files = isset($options['ignore']) ? $options['ignore'] : array();
+		$overwrite_files = isset($options['overwrite']) ? $options['overwrite'] : true;
+
+		if (is_dir($source))
+		{
+			if (!file_exists($destination))
+				@mkdir($destination);
+
+			$dir_obj = dir($source);
+
+			while (($file = $dir_obj->read()) !== false) 
+			{
+				if ($file == '.' || $file == '..')
+					continue;
+
+				if (in_array($file, $ignore_files))
+					continue;
+
+				$dir_path = $source . '/' . $file;
+				if (!is_dir($dir_path))
+				{
+					$dest_path = $destination . '/' . $file;
+					if ($overwrite_files || !file_exists($dest_path))
+						copy($dir_path, $dest_path);
+				}
+				else
+				{
+					self::copy_directory($dir_path, $destination . '/' . $file, $options);
+				}
+			}
+
+			$dir_obj->close();
+		} 
+		else 
+		{
+			copy($source, $destination);
+		}
+	}    
+
+	public static function make_dir($path, $permissions)
+	{
+		if (!file_exists($path))
+			@mkdir($path);
+		
+		@chmod($path, $permissions);
+	}
+
+	public static function deny_dir_access($path, $permissions)
+	{
+		$path .= '/.htaccess';
+		
+		$data = "order deny,allow\ndeny from all";
+		@file_put_contents($path, $data);
+		
+		@chmod($path, $permissions);
+	}
+
+	public static function delete_recursive($path) 
+	{
+		if (!is_dir($path)) 
+			return false;
+
+		$iterator = new DirectoryIterator($path);
+		foreach ($iterator as $file) 
+		{
+			if ($file->isDot())
+				continue;
+
+			$dir_path = $file->getPathname();
+
+			if (!is_link($dir_path) && $file->isDir()) 
+				self::delete_recursive($dir_path);
+			else
+				@unlink($dir_path);
+		}
+		
+		@rmdir($path);
+		return true;
+	}	
 }
