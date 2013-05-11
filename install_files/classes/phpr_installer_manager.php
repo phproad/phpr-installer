@@ -21,8 +21,12 @@ class Phpr_Installer_Manager
 
 	public static function download_package($hash, $code, $expected_hash)
 	{
+		$params = array(
+			'hash' => $hash,
+			'code' => $code
+		);
 		$tmp_file = self::get_package_file_path($code);
-		$result = self::request_gateway_data(self::uri_get_install_file.'/'.$hash.'/'.$code);
+		$result = self::request_gateway_data(self::uri_get_install_file, $params);
 
 		$tmp_save_result = false;
 		try
@@ -33,7 +37,6 @@ class Phpr_Installer_Manager
 		{
 			throw new Exception("Unable create temporary file in ".$tmp_file);
 		}
-
 
 		if (!$tmp_save_result)
 			throw new Exception("Unable create temporary file in ".$tmp_file);
