@@ -374,7 +374,7 @@ class Phpr_Installer_Manager
 			'theme_code'   => $theme_code,
 			'vendor_name'  => $vendor_name,
 			'vendor_url'   => $vendor_url,
-			'file_hashes'  => $file_hashes
+			'file_hashes'  => (array)$file_hashes
 		);
 
 		return $install_params;
@@ -410,10 +410,10 @@ class Phpr_Installer_Manager
 			'host'           => $mysql_host,
 			'db_name'        => $db_name,
 			'mysql_user'     => $mysql_user,
-			'mysql_password' => $mysql_password            
+			'mysql_password' => $mysql_password
 		);
 
-		return $install_params;        
+		return $install_params;
 	}   
 
 	/**
@@ -439,7 +439,7 @@ class Phpr_Installer_Manager
 			'admin_url' => $admin_url
 		);
 
-		return $install_params;        
+		return $install_params;
 	}
 
 	public static function validate_system_config($folder_mask, $file_mask, $time_zone)
@@ -660,7 +660,7 @@ class Phpr_Installer_Manager
 			throw new Exception('Unable to create configuration file: '.$config_file_path.' - the config directory is not writable for PHP. Please try to use a less restrictive folder permission mask. You will need to empty the installation directory and restart the installer.');
 		
 		if (@file_put_contents($config_file_path, $config) === false)
-			throw new Exception('Unable to create configuration file: '.$config_file_path);            
+			throw new Exception('Unable to create configuration file: '.$config_file_path);
 	}
 
 	// Generates a template file safely (no overwrite)
