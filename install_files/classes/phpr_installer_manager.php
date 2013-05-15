@@ -31,10 +31,12 @@ class Phpr_Installer_Manager
 		if (!isset($result->data) || !$result->data) 
 			throw new Exception("Unable to download package file: ". $code);
 
+		$file_data = base64_decode($result->data);
+
 		$tmp_save_result = false;
 		try
 		{
-			$tmp_save_result = @file_put_contents($tmp_file, $result->data);
+			$tmp_save_result = @file_put_contents($tmp_file, $file_data);
 		}
 		catch (Exception $ex)
 		{
