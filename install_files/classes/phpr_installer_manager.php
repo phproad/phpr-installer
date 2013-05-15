@@ -24,13 +24,17 @@ class Phpr_Installer_Manager
 			'hash' => $hash,
 			'code' => $code
 		);
+
 		$tmp_file = self::get_package_file_path($code);
 		$result = self::request_gateway_data(self::uri_get_install_file, $params);
+
+		if (!isset($result->data) || !$result->data) 
+			throw new Exception("Unable to download package file: ". $code);
 
 		$tmp_save_result = false;
 		try
 		{
-			$tmp_save_result = @file_put_contents($tmp_file, $result['data']);
+			$tmp_save_result = @file_put_contents($tmp_file, $result->data);
 		}
 		catch (Exception $ex)
 		{
