@@ -7,7 +7,7 @@ class Zip_Helper
 {
 	protected static $_initialized = false;
 	
-	public static function unzip($path, $archive_path, $file_permissions, $folder_permissions)
+	public static function unzip($archive_path, $path, $file_permissions, $folder_permissions)
 	{
 		global $installer_zip_file_permissions;
 		global $installer_zip_folder_permissions;

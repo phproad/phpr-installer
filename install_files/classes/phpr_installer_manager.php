@@ -369,8 +369,7 @@ class Phpr_Installer_Manager
 
 		try
 		{
-			// Generate files
-			self::generate_file_strut();
+			// Generate config file
 			self::generate_config_file();
 
 			// Validate framework exists
@@ -395,29 +394,6 @@ class Phpr_Installer_Manager
 				@file_put_contents($ht_file, $original_htaccess_contents);
 		
 			throw $ex;
-		}
-	}
-
-	// Unzips all ARC packages found in the temp folder
-	public static function generate_file_strut()
-	{
-		$installer = Phpr_Installer::create();
-		extract($installer->get_file_permissions());
-
-		$path = PATH_INSTALL_APP.'/temp';
-		$iterator = new DirectoryIterator($path);
-		foreach ($iterator as $file) 
-		{
-			if ($file->isDir() || $file->isDot())
-				continue;
-			
-			$file_extension = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
-			if ($file_extension != 'arc')
-				continue;
-
-			$zip_file_permissions = $file_permissions;
-			$zip_folder_permissions = $folder_permissions;
-			Zip_Helper::unzip(PATH_INSTALL, $file->getPathname(), $zip_file_permissions, $zip_folder_permissions);
 		}
 	}
 
@@ -528,7 +504,7 @@ class Phpr_Installer_Manager
 		$theme = new Cms_Theme();
 	
 		if (defined('URL_GATEWAY'))
-		{        
+		{
 			$crypt = Install_Crypt::create();
 			$app_info = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::$install_key);
 			$theme->name = $app_info['theme_name'];
@@ -599,22 +575,14 @@ class Phpr_Installer_Manager
 		return $result;
 	}        
 
-	public static function extract_file($src_file, $dest)
+	public static function extract_file($src_file, $dest_path)
 	{
-		if (!class_exists('ZipArchive'))
-			throw new Exception("Your PHP installation does not have the Zip library. You can install it by recompiling PHP with the --enable-zip option or check the install documentation for alternate instructions.");
-		  
-		$zip = new ZipArchive;
-		$response = $zip->open($src_file);
-		if ($response === TRUE) 
-		{
-			$zip->extractTo($dest);
-			$zip->close();
-		}
-		else
-		{
-			throw new Exception("Cannot uncompress package, Code: ".$response);
-		}
+		$installer = Phpr_Installer::create();
+		extract($installer->get_file_permissions());
+
+		$zip_file_permissions = $file_permissions;
+		$zip_folder_permissions = $folder_permissions;
+		Zip_Helper::unzip($src_file, $dest_path, $file_permissions, $folder_permissions);
 	}
 
 	public static function find_file($path, $file_match) 
