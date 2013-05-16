@@ -29,7 +29,7 @@ class Phpr_Installer_Manager
 		$result = self::request_gateway_data(self::uri_get_install_file, $params);
 
 		if (!isset($result->data) || !$result->data) 
-			throw new Exception("Unable to download package file: ". $name);
+			throw new Exception('Unable to download package file: '. $name);
 
 		$file_data = base64_decode($result->data);
 
@@ -40,11 +40,11 @@ class Phpr_Installer_Manager
 		}
 		catch (Exception $ex)
 		{
-			throw new Exception("Unable create temporary file in ".$tmp_file);
+			throw new Exception('Unable create temporary file in '.$tmp_file);
 		}
 
 		if (!$tmp_save_result)
-			throw new Exception("Unable create temporary file in ".$tmp_file);
+			throw new Exception('Unable create temporary file in '.$tmp_file);
 
 		$downloaded_hash = md5_file($tmp_file);
 
@@ -53,7 +53,7 @@ class Phpr_Installer_Manager
 			if (file_exists($tmp_file))
 				@unlink($tmp_file);
 
-			throw new Exception("Downloaded archive is corrupt. Please try the install again.");
+			throw new Exception('Downloaded archive is corrupt. Please try the install again.');
 		}
 
 		return $tmp_file;
@@ -75,27 +75,37 @@ class Phpr_Installer_Manager
 			@mkdir($tmp_path);
 
 		if (!is_writable($tmp_path))
-			throw new Exception("Unable to write to path ".$tmp_path);
+			throw new Exception('Unable to write to path '.$tmp_path);
 
 		self::extract_file($tmp_file, $tmp_path);
 
-		$tmp_module_file_path = self::find_file($tmp_path, $code.'_module.php');
-		if (!$tmp_module_file_path)
-			throw new Exception("Package ".$name." does not appear to be a valid module.");
+		// Handle module
+		if ($package_info->type == 'module') {
+	
+			$tmp_module_file_path = self::find_file($tmp_path, $code.'_module.php');
+			if (!$tmp_module_file_path)
+				throw new Exception('Package '.$name.' does not appear to be a valid module.');
 
-		if ($code != 'core') {
-			$tmp_module_path = dirname(dirname($tmp_module_file_path));
-			$module_path = PATH_INSTALL.DS.'modules'.DS.$code;
-		} else {
-			// Core package must contain the bootstrap/framework files
-			$tmp_module_path = dirname(dirname(dirname(dirname($tmp_module_file_path))));
-			$module_path = PATH_INSTALL;
+			if ($code != 'core') {
+				$tmp_package_path = dirname(dirname($tmp_module_file_path));
+				$package_path = PATH_INSTALL.DS.'modules'.DS.$code;
+			} else {
+				// Core package must contain the bootstrap/framework files
+				$tmp_package_path = dirname(dirname(dirname(dirname($tmp_module_file_path))));
+				$package_path = PATH_INSTALL;
+			}
 		}
-		
-		if (!file_exists($module_path))
-			@mkdir($module_path, 0, true);
 
-		self::copy_directory($tmp_module_path, $module_path);
+		// Handle theme
+		else if ($package_info->type == 'theme') {
+			$tmp_package_path = $tmp_path;
+			$package_path = PATH_INSTALL.DS.'themes'.DS.$code;
+		}
+
+		if (!file_exists($package_path))
+			@mkdir($package_path, 0, true);
+
+		self::copy_directory($tmp_package_path, $package_path);
 		self::delete_recursive($tmp_path);
 		@unlink($tmp_file);
 	}
