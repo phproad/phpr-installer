@@ -176,11 +176,7 @@ class Phpr_Installer
 				if ($error)
 					$this->render_partial('website_config', array('error' => $error)); 
 				else
-					$this->render_partial('download_packages');
-			break;
-
-			case 'download_packages':
-				$this->render_partial('database_config');
+					$this->render_partial('database_config');
 			break;
 
 			case 'database_config':
@@ -319,9 +315,13 @@ class Phpr_Installer
 					$this->render_partial('encryption_code', array('error' => $error)); 
 				else
 				{
-					$files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');
-					$this->render_partial('complete', array('base_url'=>get_base_url()));
-				}                   
+					$this->render_partial('download_packages', array('base_url'=>get_base_url()));
+				}
+			break;
+
+			case 'download_packages':
+				$files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');
+				$this->render_partial('complete');
 			break;
 		}
 	}
