@@ -110,6 +110,14 @@ class Phpr_Installer
 		return $file_hashes;
 	}
 
+	public function get_package_info($name) 
+	{
+		$crypt = Install_Crypt::create();
+		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
+		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
+		return isset($package_info[$name]) ? $package_info[$name] : null;
+	}
+
 	public function get_hash()
 	{
 		$crypt = Install_Crypt::create();

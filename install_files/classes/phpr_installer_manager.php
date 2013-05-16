@@ -14,8 +14,8 @@ class Phpr_Installer_Manager
 	
 	public static function get_package_list()
 	{
-		$obj = Phpr_Installer::create();
-		return "'" . implode("','", array_keys($obj->get_file_hashes())) . "'";
+		$installer = Phpr_Installer::create();
+		return "'" . implode("','", array_keys($installer->get_file_hashes())) . "'";
 	}
 
 	public static function download_package($hash, $code, $expected_hash)
@@ -62,8 +62,14 @@ class Phpr_Installer_Manager
 	public static function unzip_package($name)
 	{
 		$name = strtolower($name);
-		$tmp_file = self::get_package_file_path($name);
-		$tmp_path = dirname($tmp_file).DS.$name.DS;
+		$installer = Phpr_Installer::create();
+		$package_info = $installer->get_package_info($name);
+		if (!$package_info)
+			throw new Exception('Unable to find package information for '. $name);
+
+		$code = $package_info->code;
+		$tmp_file = self::get_package_file_path($code);
+		$tmp_path = dirname($tmp_file).DS.$code.DS;
 
 		if (!file_exists($tmp_path))
 			@mkdir($tmp_path);
@@ -73,13 +79,13 @@ class Phpr_Installer_Manager
 
 		self::extract_file($tmp_file, $tmp_path);
 
-		$tmp_module_file_path = self::find_file($tmp_path, $name.'_module.php');
+		$tmp_module_file_path = self::find_file($tmp_path, $code.'_module.php');
 		if (!$tmp_module_file_path)
 			throw new Exception("Package ".$name." does not appear to be a valid module.");
 
-		if ($name != 'core') {
+		if ($code != 'core') {
 			$tmp_module_path = dirname(dirname($tmp_module_file_path));
-			$module_path = PATH_INSTALL.DS.'modules'.DS.$name;
+			$module_path = PATH_INSTALL.DS.'modules'.DS.$code;
 		} else {
 			// Core package must contain the bootstrap/framework files
 			$tmp_module_path = dirname(dirname(dirname(dirname($tmp_module_file_path))));
