@@ -177,7 +177,7 @@ class Phpr_Installer_Manager
 
 		$birthmark = $data->birthmark;
 		$package_info = $data->package_info;
-		$licence_key = $data->key;
+		$license_key = $data->key;
 		$application_name = $data->application_name;
 		$application_image = $data->application_image;
 		$theme_code = $data->theme_code;
@@ -188,7 +188,7 @@ class Phpr_Installer_Manager
 		$install_params = array(
 			'hash'         => $hash,
 			'birthmark'    => $birthmark,
-			'key'          => $licence_key,
+			'key'          => $license_key,
 			'license_name' => $license_name,
 			'app_name'     => $application_name,
 			'app_image'    => $application_image,
@@ -455,13 +455,10 @@ class Phpr_Installer_Manager
 		$crypt = Install_Crypt::create();
 		$config_content = array();
 
-		if (defined('URL_GATEWAY'))
-		{
-			$licence_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::$install_key);
-			$config_content['hash'] = $licence_params['hash'];
-			$config_content['licence_key'] = $licence_params['key'];
-			$config_content['licence_holder'] = $licence_params['holder'];
-		}
+		$license_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::$install_key);
+		$config_content['birthmark'] = $birthmark = $license_params['birthmark'];
+		$config_content['license_key'] = $license_key = $license_params['key'];
+		$config_content['license_name'] = $license_name = $license_params['name'];
 		
 		$encrypt_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params6.dat', self::$install_key);
 		$config_content['config_key']  = $encrypt_params['enc_key'];
@@ -473,11 +470,13 @@ class Phpr_Installer_Manager
 		$framework = Phpr_SecurityFramework::create()->reset_instance();
 		Db_Update_Manager::update();
 
-		if (defined('URL_GATEWAY'))
-		{
-			Db_Module_Parameters::set('core', 'hash', base64_encode($framework->encrypt($licence_hash)));
-			Db_Module_Parameters::set('core', 'licence_key', $licence_key);  
-		}
+		Db_Module_Parameters::set('core', 'birthmark', $birthmark);  
+		Db_Module_Parameters::set('core', 'license_key', base64_encode($framework->encrypt($license_key)));
+		Db_Module_Parameters::set('core', 'license_name', base64_encode($framework->encrypt($license_name)));
+		Db_Module_Parameters::set('core', 'application_name', $license_params['application_name']);
+		Db_Module_Parameters::set('core', 'application_image', $license_params['application_image']);
+		Db_Module_Parameters::set('core', 'vendor_name', $license_params['vendor_name']);
+		Db_Module_Parameters::set('core', 'vendor_url', $license_params['vendor_url']);
 	}
 
 	// Create administrator account
@@ -495,7 +494,7 @@ class Phpr_Installer_Manager
 		$user->password_confirm = $admin_user_params['password'];
 		$user->save();
 		
-		Db_DbHelper::query("insert into admin_groups_users(admin_user_id, admin_group_id) values(LAST_INSERT_ID(), (select id from admin_groups where code='administrator'))");
+		Db_DbHelper::query("insert into admin_groups_users(admin_user_id, admin_group_id) values(:user_id, (select id from admin_groups where code='administrator'))", array('user_id'=>$user->id));
 	}
 	
 	// Create the default theme
@@ -503,22 +502,13 @@ class Phpr_Installer_Manager
 	{
 		$theme = new Cms_Theme();
 	
-		if (defined('URL_GATEWAY'))
-		{
-			$crypt = Install_Crypt::create();
-			$app_info = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::$install_key);
-			$theme->name = $app_info['theme_name'];
-			$theme->code = $app_info['theme_code'];
-			$theme->description = "Default theme for ".$app_info['name'];
-			$theme->author_website = $app_info['vendor_url'];
-			$theme->author_name = $app_info['vendor_name'];
-		}
-		else
-		{
-			$theme->name = "Default";
-			$theme->code = "default";
-		}
-		
+		$crypt = Install_Crypt::create();
+		$app_info = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::$install_key);
+		$theme->name = $app_info['theme_name'];
+		$theme->code = $app_info['theme_code'];
+		$theme->description = "Default theme for ".$app_info['name'];
+		$theme->author_website = $app_info['vendor_url'];
+		$theme->author_name = $app_info['vendor_name'];
 		$theme->default_theme = true;
 		$theme->enabled = true;
 		$theme->save();
