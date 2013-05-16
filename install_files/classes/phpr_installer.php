@@ -125,6 +125,24 @@ class Phpr_Installer
 		return (isset($params['hash'])) ? $params['hash'] : array();
 	}
 
+	public function get_file_permissions()
+	{
+		$crypt = Install_Crypt::create();
+		$system_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params4.dat', self::$install_key);
+		
+		$file_permissions_octal = '0'.$system_params['file_mask'];
+		$folder_permissions_octal = '0'.$system_params['folder_mask'];
+		$file_permissions = eval('return '.$file_permissions_octal.';');
+		$folder_permissions = eval('return '.$folder_permissions_octal.';');
+
+		return array(
+			'file_permissions'         => $file_permissions, 
+			'folder_permissions'       => $folder_permissions,
+			'file_permissions_octal'   => $file_permissions_octal,
+			'folder_permissions_octal' => $folder_permissions_octal
+		);		
+	}
+
 	public function show_installer_step()
 	{
 		$this_step = self::post('step');

@@ -401,9 +401,8 @@ class Phpr_Installer_Manager
 	// Unzips all ARC packages found in the temp folder
 	public static function generate_file_strut()
 	{
-		$crypt = Install_Crypt::create();
-		$system_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params4.dat', self::$install_key);
-		extract(self::get_file_permissions($system_params));
+		$installer = Phpr_Installer::create();
+		extract($installer->get_file_permissions());
 
 		$path = PATH_INSTALL_APP.'/temp';
 		$iterator = new DirectoryIterator($path);
@@ -440,12 +439,13 @@ class Phpr_Installer_Manager
 	public static function generate_config_file()
 	{
 		$crypt = Install_Crypt::create();
+		$installer = Phpr_Installer::create();
 		$db_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params2.dat', self::$install_key);
 		$url_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params3.dat', self::$install_key);
 		$system_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params4.dat', self::$install_key);
-		extract(self::get_file_permissions($system_params));
+		extract($installer->get_file_permissions());
 
-		$config = file_get_contents(PATH_INSTALL_APP.'/templates/config.tpl');          
+		$config = file_get_contents(PATH_INSTALL_APP.'/templates/config.tpl');
 
 		$config = str_replace('%APP_NAME%', APP_NAME, $config);
 		$config = str_replace('%TIMEZONE%', $system_params['time_zone'], $config);
@@ -467,21 +467,6 @@ class Phpr_Installer_Manager
 		
 		if (@file_put_contents($config_file_path, $config) === false)
 			throw new Exception('Unable to create configuration file: '.$config_file_path);
-	}
-
-	public static function get_file_permissions($system_params)
-	{
-		$file_permissions_octal = '0'.$system_params['file_mask'];
-		$folder_permissions_octal = '0'.$system_params['folder_mask'];
-		$file_permissions = eval('return '.$file_permissions_octal.';');
-		$folder_permissions = eval('return '.$folder_permissions_octal.';');
-
-		return array(
-			'file_permissions'         => $file_permissions, 
-			'folder_permissions'       => $folder_permissions,
-			'file_permissions_octal'   => $file_permissions_octal,
-			'folder_permissions_octal' => $folder_permissions_octal
-		);
 	}
 
 	// Create database objects
