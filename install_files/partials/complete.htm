@@ -1,12 +1,23 @@
 <div id="partial_complete">
-<div id="title">
-	<h2>Installation Complete!</h2>
-</div>
 
-<div id="content">
-	<div class="wrapper">
-		<h3>Congratulations!</h3>
-		<p>Installation has been successfully completed.</p>
+	<?php if (isset($error)): ?>
+		<h1>Oh noes!</h1>
+		<p class="lead">Something went wrong during the final stage of installation.</p>
+	    
+	    <h4>Error Message:</h4>
+
+	    <br />
+        <blockquote><?php echo Phpr_Installer::h($error->getMessage()) ?></blockquote>
+        <br />
+
+	    <h4>What now?</h4>
+        <p>If you can fix this error, repeat this step again by <a href="javascript:window.location.reload(true)">reloading the page</a>.</p>
+        <p>For assistance with installation, please consult <a href="<?=URL_DOCS?>" target="_blank">the documentation</a>.</p>
+
+	<?php else: ?>
+
+		<h1>Congratulations!</h1>
+		<p class="lead">Installation has been successfully completed.</p>
 
 		<h4>Website address</h4>
 
@@ -19,6 +30,6 @@
 		<p><em>Important!</em> The installation files were not deleted. Please delete the <strong>install.php</strong> script and the <strong>install_files</strong> directory manually.</p>
 
 		<p>Thank you for choosing <?=APP_NAME?></p>
-	</div>
-</div>
+
+	<?php endif ?>
 </div>

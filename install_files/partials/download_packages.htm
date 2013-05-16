@@ -4,7 +4,7 @@
 		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
 		
 		<h1>Package Download</h1>
-		<p class="lead"><?=APP_NAME?> will now download the required packages, click Download to proceed. For more information please see <a href="<?=URL_DOCS?>" target="_blank">the documentation</a>.</p>    
+		<p class="lead"><?=APP_NAME?> will now download the required packages, click Download to proceed. For more information please see <a href="<?=URL_DOCS?>" target="_blank">the documentation</a>.</p>
 
 		<div id="download_progress">
 			<div class="progress">
@@ -18,7 +18,7 @@
 		<div class="form-actions">
 			<div class="pull-right">
 				<input type="button" class="button" value="Download" id="download_btn" onclick="return start_download()" />
-				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" style="display:none" />
+				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" style="display:anone" />
 			</div>
 			<?php if (isset($error)): ?>
 				<div class="pull-right">

@@ -320,7 +320,7 @@ class Phpr_Installer
 			case 'download_packages':
 				$error = false;
 				try
-				{			
+				{
 					Phpr_Installer_Manager::install_phpr(self::post('install_key'));
 				}
 				catch (Exception $ex)
@@ -329,7 +329,7 @@ class Phpr_Installer
 				}
 
 				$files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');
-				$this->render_partial('complete', array('base_url' => $this->get_base_url()));
+				$this->render_partial('complete', array('error' => $error, 'base_url' => $this->get_base_url()));
 			break;
 		}
 	}
@@ -499,7 +499,7 @@ class Phpr_Installer
 			$base_url = 'http://localhost/';
 		}
 		return $base_url;
-	}    
+	}
 
 }
 
