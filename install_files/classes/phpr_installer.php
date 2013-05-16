@@ -98,51 +98,6 @@ class Phpr_Installer
 		}
 	}
 
-	public function get_file_hashes()
-	{
-		$crypt = Install_Crypt::create();
-		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
-		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
-		$file_hashes = array();
-		foreach ($package_info as $key=>$package) {
-			$file_hashes[$key] = $package->hash;
-		}
-		return $file_hashes;
-	}
-
-	public function get_package_info($name) 
-	{
-		$crypt = Install_Crypt::create();
-		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
-		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
-		return isset($package_info[$name]) ? $package_info[$name] : null;
-	}
-
-	public function get_hash()
-	{
-		$crypt = Install_Crypt::create();
-		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
-		return (isset($params['hash'])) ? $params['hash'] : array();
-	}
-
-	public function get_file_permissions()
-	{
-		$crypt = Install_Crypt::create();
-		$system_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params4.dat', self::$install_key);
-		
-		$file_permissions_octal = '0'.$system_params['file_mask'];
-		$folder_permissions_octal = '0'.$system_params['folder_mask'];
-		$file_permissions = eval('return '.$file_permissions_octal.';');
-		$folder_permissions = eval('return '.$folder_permissions_octal.';');
-
-		return array(
-			'file_permissions'         => $file_permissions, 
-			'folder_permissions'       => $folder_permissions,
-			'file_permissions_octal'   => $file_permissions_octal,
-			'folder_permissions_octal' => $folder_permissions_octal
-		);		
-	}
-
 	public function show_installer_step()
 	{
 		$this_step = self::post('step');
@@ -370,6 +325,57 @@ class Phpr_Installer
 			break;
 		}
 	}
+
+	// Services
+	// 
+
+	public function get_file_hashes()
+	{
+		$crypt = Install_Crypt::create();
+		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
+		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
+		$file_hashes = array();
+		foreach ($package_info as $key=>$package) {
+			$file_hashes[$key] = $package->hash;
+		}
+		return $file_hashes;
+	}
+
+	public function get_package_info($name) 
+	{
+		$crypt = Install_Crypt::create();
+		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
+		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
+		return isset($package_info[$name]) ? $package_info[$name] : null;
+	}
+
+	public function get_hash()
+	{
+		$crypt = Install_Crypt::create();
+		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
+		return (isset($params['hash'])) ? $params['hash'] : array();
+	}
+
+	public function get_file_permissions()
+	{
+		$crypt = Install_Crypt::create();
+		$system_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params4.dat', self::$install_key);
+		
+		$file_permissions_octal = '0'.$system_params['file_mask'];
+		$folder_permissions_octal = '0'.$system_params['folder_mask'];
+		$file_permissions = eval('return '.$file_permissions_octal.';');
+		$folder_permissions = eval('return '.$folder_permissions_octal.';');
+
+		return array(
+			'file_permissions'         => $file_permissions, 
+			'folder_permissions'       => $folder_permissions,
+			'file_permissions_octal'   => $file_permissions_octal,
+			'folder_permissions_octal' => $folder_permissions_octal
+		);		
+	}
+
+	// Helpers
+	// 
 
 	public static function get_request_uri()
 	{
