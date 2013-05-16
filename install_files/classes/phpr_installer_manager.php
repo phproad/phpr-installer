@@ -160,7 +160,7 @@ class Phpr_Installer_Manager
 		$data = $result->data;
 
 		$birthmark = $data->birthmark;
-		$file_hashes = $data->file_hashes;
+		$package_info = $data->package_info;
 		$licence_key = $data->key;
 		$application_name = $data->application_name;
 		$application_image = $data->application_image;
@@ -180,7 +180,7 @@ class Phpr_Installer_Manager
 			'theme_code'   => $theme_code,
 			'vendor_name'  => $vendor_name,
 			'vendor_url'   => $vendor_url,
-			'file_hashes'  => (array)$file_hashes
+			'package_info'  => (array)$package_info
 		);
 
 		return $install_params;
