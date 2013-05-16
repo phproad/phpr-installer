@@ -5,7 +5,7 @@ class Phpr_Installer_Manager
 
 	private static $install_key = null;
 
-	const uri_get_install_hashes = 'install/hashes/get';
+	const uri_get_install_package = 'install/package/get';
 	const uri_get_install_file = 'install/file/get';
 
 	/**
@@ -153,7 +153,7 @@ class Phpr_Installer_Manager
 			'url' => base64_encode($this->get_root_url())
 		);
 
-		$result = self::request_gateway_data(self::uri_get_install_hashes, $params);
+		$result = self::request_gateway_data(self::uri_get_install_package, $params);
 		if (!$result->data)
 			throw new Exception("Invalid server response");
 
@@ -168,54 +168,6 @@ class Phpr_Installer_Manager
 		$theme_name = $data->theme_name;
 		$vendor_name = $data->vendor_name;
 		$vendor_url = $data->vendor_url;
-
-		/*
-
-		$tmp_path = PATH_INSTALL_APP.'/temp';
-		if (!is_writable($tmp_path))
-			throw new Exception("Cannot create temporary file. Path is not writable: ".$tmp_path);
-
-		$files = array();
-		try
-		{
-			
-			foreach ($file_hashes as $code=>$file_hash)
-			{
-				$tmp_file = $tmp_path.'/'.$code.'.arc';
-				$result = self::request_gateway_data(self::uri_get_install_file.'/'.$hash.'/'.$code);
-
-				$tmp_save_result = false;
-				try
-				{
-					$tmp_save_result = @file_put_contents($tmp_file, $result['data']);
-				}
-				catch (Exception $ex)
-				{
-					throw new Exception("Error creating temporary file in ".$tmp_path);
-				}
-				
-				$files[] = $tmp_file;
-		
-				if (!$tmp_save_result)
-					throw new Exception("Error creating temporary file in ".$tmp_path);
-			
-				$downloaded_hash = md5_file($tmp_file);
-				if ($downloaded_hash != $file_hash)
-					throw new Exception("Downloaded archive is corrupted. Please try again.");
-
-			}
-		}
-		catch (Exception $ex)
-		{
-			foreach ($files as $file)
-			{
-				if (file_exists($file))
-					@unlink($file);
-			}
-			
-			throw $ex;
-		}
-		*/
 
 		$install_params = array(
 			'hash'         => $hash,
