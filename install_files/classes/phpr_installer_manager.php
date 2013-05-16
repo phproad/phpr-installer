@@ -400,7 +400,7 @@ class Phpr_Installer_Manager
 	// Create .htaccess file
 	public static function generate_htaccess_file($php5_handler)
 	{
-		if (!@copy(PATH_INSTALL_APP.'/templates/htaccess.tpl', PATH_INSTALL.'/.htaccess'))
+		if (!@copy(PATH_INSTALL_APP.'/install_files/templates/htaccess.tpl', PATH_INSTALL.'/.htaccess'))
 			throw new Exception('Unable to create the .htaccess file: '.PATH_INSTALL.'/.htaccess');
 			
 		if ($php5_handler)
@@ -421,7 +421,7 @@ class Phpr_Installer_Manager
 		$system_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params4.dat', self::$install_key);
 		extract($installer->get_file_permissions());
 
-		$config = file_get_contents(PATH_INSTALL_APP.'/templates/config.tpl');
+		$config = file_get_contents(PATH_INSTALL_APP.'/install_files/templates/config.tpl');
 
 		$config = str_replace('%APP_NAME%', APP_NAME, $config);
 		$config = str_replace('%TIMEZONE%', $system_params['time_zone'], $config);

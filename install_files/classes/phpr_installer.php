@@ -303,8 +303,6 @@ class Phpr_Installer
 						$install_params, 
 						self::post('install_key')
 					);
-
-					Phpr_Installer_Manager::install_phpr(self::post('install_key'));
 				}
 				catch (Exception $ex)
 				{
@@ -315,13 +313,23 @@ class Phpr_Installer
 					$this->render_partial('encryption_code', array('error' => $error)); 
 				else
 				{
-					$this->render_partial('download_packages', array('base_url'=>get_base_url()));
+					$this->render_partial('download_packages');
 				}
 			break;
 
 			case 'download_packages':
+				$error = false;
+				try
+				{			
+					Phpr_Installer_Manager::install_phpr(self::post('install_key'));
+				}
+				catch (Exception $ex)
+				{
+					$error = $ex;
+				}
+
 				$files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');
-				$this->render_partial('complete');
+				$this->render_partial('complete', array('base_url' => $this->get_base_url()));
 			break;
 		}
 	}
@@ -359,7 +367,7 @@ class Phpr_Installer
 	public function get_file_permissions()
 	{
 		$crypt = Install_Crypt::create();
-		$system_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params4.dat', self::$install_key);
+		$system_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params4.dat', self::post('install_key'));
 		
 		$file_permissions_octal = '0'.$system_params['file_mask'];
 		$folder_permissions_octal = '0'.$system_params['folder_mask'];
