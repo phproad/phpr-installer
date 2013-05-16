@@ -420,15 +420,6 @@ class Phpr_Installer_Manager
 			$zip_folder_permissions = $folder_permissions;
 			Zip_Helper::unzip(PATH_INSTALL, $file->getPathname(), $zip_file_permissions, $zip_folder_permissions);
 		}
-
-		// Set up folders
-		self::make_dir(PATH_INSTALL.'/controllers', $folder_permissions);
-		self::make_dir(PATH_INSTALL.'/init', $folder_permissions);
-		self::make_dir(PATH_INSTALL.'/uploaded/public', $folder_permissions);
-		self::make_dir(PATH_INSTALL.'/uploaded/thumbnails', $folder_permissions);        
-		self::make_dir(PATH_INSTALL.'/logs', $folder_permissions);
-		self::deny_dir_access(PATH_INSTALL.'/logs', $folder_permissions);
-		self::deny_dir_access(PATH_INSTALL.'/temp', $folder_permissions);
 	}
 
 	// Create .htaccess file
@@ -701,24 +692,6 @@ class Phpr_Installer_Manager
 			copy($source, $destination);
 		}
 	}    
-
-	public static function make_dir($path, $permissions)
-	{
-		if (!file_exists($path))
-			@mkdir($path);
-		
-		@chmod($path, $permissions);
-	}
-
-	public static function deny_dir_access($path, $permissions)
-	{
-		$path .= '/.htaccess';
-		
-		$data = "order deny,allow\ndeny from all";
-		@file_put_contents($path, $data);
-		
-		@chmod($path, $permissions);
-	}
 
 	public static function delete_recursive($path) 
 	{
