@@ -18,18 +18,18 @@ class Phpr_Installer_Manager
 		return "'" . implode("','", array_keys($installer->get_file_hashes())) . "'";
 	}
 
-	public static function download_package($hash, $code, $expected_hash)
+	public static function download_package($hash, $name, $expected_hash)
 	{
 		$params = array(
 			'hash' => $hash,
-			'code' => $code
+			'code' => $name
 		);
 
-		$tmp_file = self::get_package_file_path($code);
+		$tmp_file = self::get_package_file_path($name);
 		$result = self::request_gateway_data(self::uri_get_install_file, $params);
 
 		if (!isset($result->data) || !$result->data) 
-			throw new Exception("Unable to download package file: ". $code);
+			throw new Exception("Unable to download package file: ". $name);
 
 		$file_data = base64_decode($result->data);
 
@@ -68,8 +68,8 @@ class Phpr_Installer_Manager
 			throw new Exception('Unable to find package information for '. $name);
 
 		$code = $package_info->code;
-		$tmp_file = self::get_package_file_path($code);
-		$tmp_path = dirname($tmp_file).DS.$code.DS;
+		$tmp_file = self::get_package_file_path($name);
+		$tmp_path = dirname($tmp_file).DS.$name.DS;
 
 		if (!file_exists($tmp_path))
 			@mkdir($tmp_path);
