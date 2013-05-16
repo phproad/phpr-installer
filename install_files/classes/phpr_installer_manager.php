@@ -98,7 +98,7 @@ class Phpr_Installer_Manager
 
 		// Handle theme
 		else if ($package_info->type == 'theme') {
-			$tmp_package_path = $tmp_path;
+			$tmp_package_path = $tmp_path.DS.$code;
 			$package_path = PATH_INSTALL.DS.'themes'.DS.$code;
 		}
 
