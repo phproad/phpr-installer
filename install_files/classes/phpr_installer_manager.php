@@ -371,9 +371,10 @@ class Phpr_Installer_Manager
 		{
 			// Generate config file
 			self::generate_config_file();
+			self::generate_index_file();
 
 			// Validate framework exists
-			if (!file_exists(PATH_INSTALL.'/index.php'))
+			if (!file_exists(PATH_INSTALL.'/index.php') || !file_exists(PATH_INSTALL.'/framework/boot.php'))
 				throw new Exception('Fatal Error: Unable to locate framework boot file after install');
 
 			// Build base elements
@@ -443,6 +444,20 @@ class Phpr_Installer_Manager
 		
 		if (@file_put_contents($config_file_path, $config) === false)
 			throw new Exception('Unable to create configuration file: '.$config_file_path);
+	}
+
+	public static function generate_index_file()
+	{
+		$installer = Phpr_Installer::create();
+		extract($installer->get_file_permissions());
+
+		$index = file_get_contents(PATH_INSTALL_APP.'/install_files/templates/index.tpl');
+		$index_file_path = PATH_INSTALL.'/index.php';
+
+		if (@file_put_contents($index_file_path, $index) === false)
+			throw new Exception('Unable to create index file: '.$index_file_path);
+
+		@chmod($index_file_path, $file_permissions);
 	}
 
 	// Create database objects
@@ -594,7 +609,7 @@ class Phpr_Installer_Manager
 		
 		return null;
 	}
-
+	
 	public static function copy_directory($source, $destination, &$options = array())
 	{
 		$ignore_files = isset($options['ignore']) ? $options['ignore'] : array();
