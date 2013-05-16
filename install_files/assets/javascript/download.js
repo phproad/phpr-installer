@@ -24,7 +24,7 @@ var Phpr_Downloader = (function(dl, $){
     dl.get_packages = function(url, packages, install_key) {
 
         dl.url = url;
-        dl.el_msg.addClass('loading');
+        dl.el_msg.removeClass('cross').addClass('loading');
 
         dl.set_progress_points(packages.length);
 
