@@ -29,7 +29,6 @@ if (!PHP4_DETECTED)
 		die($installer->output_install_page());
 }
 
-// $app_info = get_application_info(); 
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -404,13 +404,6 @@ class Phpr_Installer_Manager
 			// Generate files
 			self::generate_file_strut();
 			self::generate_config_file();
-			
-			// @disabled
-			//self::generate_template_file('index', PATH_INSTALL.'/index.php');
-			//self::generate_htaccess_file($php5_handler);
-			self::generate_template_file('application', PATH_INSTALL.'/controllers/application.php');
-			self::generate_template_file('init', PATH_INSTALL.'/init/init.php');
-			self::generate_template_file('routes', PATH_INSTALL.'/init/routes.php');
 
 			// Validate framework exists
 			if (!file_exists(PATH_INSTALL.'/index.php'))
@@ -515,17 +508,6 @@ class Phpr_Installer_Manager
 		
 		if (@file_put_contents($config_file_path, $config) === false)
 			throw new Exception('Unable to create configuration file: '.$config_file_path);
-	}
-
-	// Generates a template file safely (no overwrite)
-	public static function generate_template_file($name, $dest_file)
-	{
-		if (!file_exists($dest_file))
-		{
-			$template_content = file_get_contents(PATH_INSTALL_APP.'/templates/'.$name.'.tpl');
-			if (@file_put_contents($dest_file, $template_content) === false)
-				throw new Exception('Unable to create '.$name.'.php file.');
-		}
 	}
 
 	public static function get_file_permissions($system_params)
