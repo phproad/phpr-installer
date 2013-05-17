@@ -102,8 +102,10 @@ class Phpr_Installer_Manager
 			$package_path = PATH_INSTALL.DS.'themes'.DS.$code;
 		}
 
+		extract($installer->get_file_permissions());
+
 		if (!file_exists($package_path))
-			@mkdir($package_path, 0, true);
+			@mkdir($package_path, $folder_permissions, true);
 
 		self::copy_directory($tmp_package_path, $package_path);
 		self::delete_recursive($tmp_path);
