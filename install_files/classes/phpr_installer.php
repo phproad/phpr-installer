@@ -46,7 +46,7 @@ class Phpr_Installer
 	{
 		$result = array();
 		
-		$result['PHP 5.2.5 or higher'] = version_compare(PHP_VERSION , "5.2.5", ">=");
+		$result['PHP 5.3 or higher'] = version_compare(PHP_VERSION , "5.3", ">=");
 		$result['PHP CURL library'] = function_exists('curl_init');     
 		$result['PHP Mcrypt library'] = function_exists('mcrypt_encrypt');
 		$result['PHP MySQL functions'] = function_exists('mysql_connect');      

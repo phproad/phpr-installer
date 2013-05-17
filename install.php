@@ -51,7 +51,7 @@ if (!PHP4_DETECTED)
 
 					<blockquote>
 						<ul class="bullets">
-							<li class="tick">PHP 5.25 or higher</li>
+							<li class="tick">PHP 5.3 or higher</li>
 							<li class="tick">PHP CURL library</li>
 							<li class="tick">PHP OpenSSL library</li>
 							<li class="tick">PHP Mcrypt library</li>
