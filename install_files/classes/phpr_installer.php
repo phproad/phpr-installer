@@ -21,9 +21,6 @@ include "install_crypt.php";
 include "phpr_installer_manager.php";
 include "zip_helper.php";
 
-$APP_CONF = array();
-$PHPR_NO_SESSION = false;
-
 class Phpr_Installer 
 {
 	public static function create()
