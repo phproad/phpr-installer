@@ -448,7 +448,7 @@ class Phpr_Installer
 			$result = $_POST[$name];
 
 			if (get_magic_quotes_gpc())
-				$result = stripslashes( $result );
+				$result = stripslashes($result);
 
 			return $result;
 		}

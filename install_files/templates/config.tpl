@@ -27,7 +27,6 @@ $CONFIG['DB_CONNECTION'] = array(
     'locale'      => 'utf8'
 );
 
-
 // Show friendly errors on the public site
 //
 $CONFIG['SHOW_FRIENDLY_ERRORS'] = false;

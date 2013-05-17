@@ -175,6 +175,7 @@ class Phpr_Installer_Manager
 
 		$data = $result->data;
 
+		$name = $data->name;
 		$birthmark = $data->birthmark;
 		$package_info = $data->package_info;
 		$license_key = $data->key;
@@ -186,6 +187,7 @@ class Phpr_Installer_Manager
 		$vendor_url = $data->vendor_url;
 
 		$install_params = array(
+			'name'         => $name,
 			'hash'         => $hash,
 			'birthmark'    => $birthmark,
 			'key'          => $license_key,
@@ -428,6 +430,7 @@ class Phpr_Installer_Manager
 		$config = str_replace('%TIMEZONE%', $system_params['time_zone'], $config);
 		$config = str_replace('%FILEPERM%', $file_permissions_octal, $config);
 		$config = str_replace('%FOLDERPERM%', $folder_permissions_octal, $config);
+		$config = str_replace('%ADMIN_URL%', '/'.$url_params['admin_url'], $config);
 		$config = str_replace('%DATABASEHOST%', $db_params['host'], $config);
 		$config = str_replace('%DATABASEUSER%', $db_params['mysql_user'], $config);
 		$config = str_replace('%DATABASEPASS%', $db_params['mysql_password'], $config);
@@ -463,6 +466,7 @@ class Phpr_Installer_Manager
 	// Create database objects
 	public static function build_database()
 	{
+		global $APP_CONF;
 		$APP_CONF = array();
 		$PHPR_INIT_ONLY = true;
 		include PATH_INSTALL.'/index.php';
@@ -488,8 +492,8 @@ class Phpr_Installer_Manager
 		Db_Module_Parameters::set('core', 'birthmark', $birthmark);  
 		Db_Module_Parameters::set('core', 'license_key', base64_encode($framework->encrypt($license_key)));
 		Db_Module_Parameters::set('core', 'license_name', base64_encode($framework->encrypt($license_name)));
-		Db_Module_Parameters::set('core', 'application_name', $license_params['application_name']);
-		Db_Module_Parameters::set('core', 'application_image', $license_params['application_image']);
+		Db_Module_Parameters::set('core', 'app_name', $license_params['app_name']);
+		Db_Module_Parameters::set('core', 'app_image', $license_params['app_image']);
 		Db_Module_Parameters::set('core', 'vendor_name', $license_params['vendor_name']);
 		Db_Module_Parameters::set('core', 'vendor_url', $license_params['vendor_url']);
 	}
