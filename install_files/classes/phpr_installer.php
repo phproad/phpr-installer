@@ -13,11 +13,10 @@ if (!ini_get('safe_mode'))
 	set_time_limit(3600);
 
 date_default_timezone_set('Australia/Sydney');
-// ini_set('date.timezone', 'AEST');
-// ini_set('display_errors', 0);
-// error_reporting(0);
+ini_set('date.timezone', 'AEST');
+ini_set('display_errors', 0);
+error_reporting(0);
 
-include "install_config.php";
 include "install_crypt.php";
 include "phpr_installer_manager.php";
 include "zip_helper.php";
@@ -27,13 +26,6 @@ $PHPR_NO_SESSION = false;
 
 class Phpr_Installer 
 {
-	public $core_modules = array(
-		//'framework' => 'http://github.com/phproad/phpr-framework/archive/master.zip', 
-		//'cms' => 'http://github.com/phproad/phpr-module-cms/archive/master.zip', 
-		//'core' => 'http://github.com/phproad/phpr-module-core/archive/master.zip', 
-		//'admin' => 'http://github.com/phproad/phpr-module-admin/archive/master.zip', 
-	);
-
 	public static function create()
 	{
 		return new self();
