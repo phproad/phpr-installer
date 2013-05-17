@@ -489,13 +489,13 @@ class Phpr_Installer_Manager
 		$framework = Phpr_SecurityFramework::create()->reset_instance();
 		Db_Update_Manager::update();
 
-		Db_Module_Parameters::set('core', 'birthmark', $birthmark);  
-		Db_Module_Parameters::set('core', 'license_key', base64_encode($framework->encrypt($license_key)));
-		Db_Module_Parameters::set('core', 'license_name', base64_encode($framework->encrypt($license_name)));
-		Db_Module_Parameters::set('core', 'app_name', $license_params['app_name']);
-		Db_Module_Parameters::set('core', 'app_image', $license_params['app_image']);
-		Db_Module_Parameters::set('core', 'vendor_name', $license_params['vendor_name']);
-		Db_Module_Parameters::set('core', 'vendor_url', $license_params['vendor_url']);
+		Phpr_Module_Parameters::set('core', 'birthmark', $birthmark);  
+		Phpr_Module_Parameters::set('core', 'license_key', base64_encode($framework->encrypt($license_key)));
+		Phpr_Module_Parameters::set('core', 'license_name', base64_encode($framework->encrypt($license_name)));
+		Phpr_Module_Parameters::set('core', 'app_name', $license_params['app_name']);
+		Phpr_Module_Parameters::set('core', 'app_image', $license_params['app_image']);
+		Phpr_Module_Parameters::set('core', 'vendor_name', $license_params['vendor_name']);
+		Phpr_Module_Parameters::set('core', 'vendor_url', $license_params['vendor_url']);
 	}
 
 	// Create administrator account
