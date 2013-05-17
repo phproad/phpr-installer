@@ -110,8 +110,6 @@ class Phpr_Installer
 			break;
 
 			case 'unzip_package':
-				sleep(1);
-
 				$package_name = self::post('package_name');
 				$core_modules = $this->get_file_hashes();
 

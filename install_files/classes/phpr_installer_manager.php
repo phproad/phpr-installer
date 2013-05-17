@@ -588,10 +588,7 @@ class Phpr_Installer_Manager
 	{
 		$installer = Phpr_Installer::create();
 		extract($installer->get_file_permissions());
-
-		$zip_file_permissions = $file_permissions;
-		$zip_folder_permissions = $folder_permissions;
-		Zip_Helper::unzip($src_file, $dest_path, $file_permissions, $folder_permissions);
+		Zip_Helper::unzip($src_file, $dest_path, $file_permissions_octal, $folder_permissions_octal);
 	}
 
 	public static function find_file($path, $file_match) 
