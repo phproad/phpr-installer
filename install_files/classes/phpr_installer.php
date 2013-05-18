@@ -123,7 +123,7 @@ class Phpr_Installer
 				Phpr_Installer_Manager::unzip_package($package_name);
 			break;
 
-			case: 'install_phpr':
+			case 'install_phpr':
 				$action = self::post('action');
 				Phpr_Installer_Manager::$install_key = self::post('install_key');
 				try 
