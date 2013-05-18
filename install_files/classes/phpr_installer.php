@@ -149,7 +149,7 @@ class Phpr_Installer
 						trim(self::post('generate_key'))
 					);
 
-					Install_Crypt::create()->encrypt_to_file(
+					Phpr_Installer_Crypt::create()->encrypt_to_file(
 						PATH_INSTALL_APP.'/temp/params1.dat', 
 						$install_params, 
 						self::post('install_key')
@@ -177,7 +177,7 @@ class Phpr_Installer
 						trim(self::post('mysql_password'))
 					);
 					
-					Install_Crypt::create()->encrypt_to_file(
+					Phpr_Installer_Crypt::create()->encrypt_to_file(
 						PATH_INSTALL_APP.'/temp/params2.dat', 
 						$install_params, 
 						self::post('install_key')
@@ -202,7 +202,7 @@ class Phpr_Installer
 						strtolower(trim(self::post('admin_url')))
 					);
 					
-					Install_Crypt::create()->encrypt_to_file(
+					Phpr_Installer_Crypt::create()->encrypt_to_file(
 						PATH_INSTALL_APP.'/temp/params3.dat', 
 						$install_params, 
 						self::post('install_key')
@@ -229,7 +229,7 @@ class Phpr_Installer
 						trim(self::post('time_zone')) 
 					);
 					
-					Install_Crypt::create()->encrypt_to_file(
+					Phpr_Installer_Crypt::create()->encrypt_to_file(
 						PATH_INSTALL_APP.'/temp/params4.dat', 
 						$install_params, 
 						self::post('install_key')
@@ -259,7 +259,7 @@ class Phpr_Installer
 						trim(self::post('password_confirm'))
 					);
 					
-					Install_Crypt::create()->encrypt_to_file(
+					Phpr_Installer_Crypt::create()->encrypt_to_file(
 						PATH_INSTALL_APP.'/temp/params5.dat', 
 						$install_params, 
 						self::post('install_key')
@@ -285,7 +285,7 @@ class Phpr_Installer
 						trim(self::post('confirmation'))
 					);
 					
-					Install_Crypt::create()->encrypt_to_file(
+					Phpr_Installer_Crypt::create()->encrypt_to_file(
 						PATH_INSTALL_APP.'/temp/params6.dat', 
 						$install_params, 
 						self::post('install_key')
@@ -331,7 +331,7 @@ class Phpr_Installer
 
 	public function get_file_hashes()
 	{
-		$crypt = Install_Crypt::create();
+		$crypt = Phpr_Installer_Crypt::create();
 		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
 		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
 		$file_hashes = array();
@@ -343,7 +343,7 @@ class Phpr_Installer
 
 	public function get_package_info($name) 
 	{
-		$crypt = Install_Crypt::create();
+		$crypt = Phpr_Installer_Crypt::create();
 		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
 		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
 		return isset($package_info[$name]) ? $package_info[$name] : null;
@@ -351,14 +351,14 @@ class Phpr_Installer
 
 	public function get_hash()
 	{
-		$crypt = Install_Crypt::create();
+		$crypt = Phpr_Installer_Crypt::create();
 		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
 		return (isset($params['hash'])) ? $params['hash'] : array();
 	}
 
 	public function get_file_permissions()
 	{
-		$crypt = Install_Crypt::create();
+		$crypt = Phpr_Installer_Crypt::create();
 		$system_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params4.dat', self::post('install_key'));
 		
 		$file_permissions_octal = '0'.$system_params['file_mask'];

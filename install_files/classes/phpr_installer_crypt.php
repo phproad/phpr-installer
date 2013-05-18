@@ -1,6 +1,6 @@
 <?php
 
-class Install_Crypt
+class Phpr_Installer_Crypt
 {
 	private static $instance;
 

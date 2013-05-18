@@ -419,7 +419,7 @@ class Phpr_Installer_Manager
 	// Generate config file
 	public static function generate_config_file()
 	{
-		$crypt = Install_Crypt::create();
+		$crypt = Phpr_Installer_Crypt::create();
 		$installer = Phpr_Installer::create();
 		$db_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params2.dat', self::$install_key);
 		$url_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params3.dat', self::$install_key);
@@ -473,7 +473,7 @@ class Phpr_Installer_Manager
 		$PHPR_INIT_ONLY = true;
 		include PATH_INSTALL.'/index.php';
 
-		$crypt = Install_Crypt::create();
+		$crypt = Phpr_Installer_Crypt::create();
 		$config_content = array();
 
 		$license_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::$install_key);
@@ -503,7 +503,7 @@ class Phpr_Installer_Manager
 	// Create administrator account
 	public static function create_admin_account()
 	{
-		$crypt = Install_Crypt::create();
+		$crypt = Phpr_Installer_Crypt::create();
 		$admin_user_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params5.dat', self::$install_key);
 
 		$user = new Admin_User();
@@ -523,7 +523,7 @@ class Phpr_Installer_Manager
 	{
 		$theme = new Cms_Theme();
 	
-		$crypt = Install_Crypt::create();
+		$crypt = Phpr_Installer_Crypt::create();
 		$app_info = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::$install_key);
 		$theme->name = $app_info['theme_name'];
 		$theme->code = $app_info['theme_code'];
