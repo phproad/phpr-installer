@@ -58,14 +58,14 @@ class Phpr_Installer
 		return $result;
 	}
 
-	public static function check_remote_event()
+	public function check_remote_event()
 	{
 		return isset($_SERVER['HTTP_PHPR_REMOTE_EVENT']);
 	}
 
-	public static function throw_fatal_error($message)
+	public function throw_fatal_error($message)
 	{
-		if (self::check_remote_event()) {
+		if ($this->check_remote_event()) {
 			header('HTTP/1.1 500 Internal Server Error');
 			header('Content-Type: text/plain');  
 			echo $message;
@@ -86,7 +86,7 @@ class Phpr_Installer
 			// @TODO
 			//Phpr_Installer_Manager::install_cleanup();
 			
-			self::throw_fatal_error($ex->getMessage());
+			$this->throw_fatal_error($ex->getMessage());
 		}
 	}
 
@@ -544,6 +544,7 @@ register_shutdown_function('phpr_installer_shutdown');
 function phpr_installer_shutdown() {
 	$error = error_get_last();
 	if ($error['type'] == 1) {
-		Phpr_Installer::throw_fatal_error($error['message']);
+		$installer = Phpr_Installer::create();
+		$installer->throw_fatal_error($error['message']);
 	} 
 }
