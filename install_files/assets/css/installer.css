@@ -10,7 +10,7 @@ small { color: #666; }
 p { line-height: 1.5em; margin: 0.5em 0; }
 p.lead { position: relative; top:-5px; font-size:1.1em; }
 legend { font-size: .9em; font-weight: normal; text-transform: uppercase; letter-spacing:1px; text-align: center; border-bottom:1px solid #e0e0e0; width: 100%; padding-bottom:.25em; margin-bottom:.25em; }
-blockquote { text-align: left; padding:.5em; margin: 0 3em; border:1px dashed #ccc; background-color: rgba(255, 246, 204, 0.75); }
+blockquote { text-align: left; padding:.5em; margin: 0 3em; border:1px dashed #ccc; background-color: rgba(255, 246, 204, 0.3); }
 .content { margin:4em auto; width:800px; background: #f9fbfc; filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f9fbfc', endColorstr='#e9eef2'); background: -moz-linear-gradient(top, #f9fbfc 0%, #e9eef2 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f9fbfc), color-stop(100%, #e9eef2)); background: -webkit-linear-gradient(top, #f9fbfc 0%, #e9eef2 100%); background: -o-linear-gradient(top, #f9fbfc 0%, #e9eef2 100%); background: -ms-linear-gradient(top, #f9fbfc 0%, #e9eef2 100%); background: linear-gradient(top, #f9fbfc 0%, #e9eef2 100%); border:1px solid #bbc3ca; border-radius:4px; box-shadow:#fff 0 0 200px; text-align:center; }
 .content-inner { padding: 3em 2em 2em 2em; margin:0 6em; height:450px; position: relative; }
 .form-actions { position: absolute; bottom: 1em; left:0; width:100%; }
