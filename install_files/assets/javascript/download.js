@@ -9,7 +9,8 @@ var Phpr_Downloader = (function(dl, $){
 	dl.currentProgressPoint = 0;
 
 	var _packages, 
-		_install_key;
+		_install_key,
+		_locked = false;
 
 	dl.constructor = $(function() {
 
@@ -31,29 +32,46 @@ var Phpr_Downloader = (function(dl, $){
 	}
 
 	dl.startDownload = function() {
-		dl.elMsg.removeClass('cross').addClass('loading');
-		dl.setProgressPoints(_packages.length);
+		if (_locked)
+			return;
 
+		dl.setLock(true);
+
+		// Reset
+		dl.eventChain = [];
+		dl.totalProgressPoints = 0;
+		dl.currentProgressPoint = 0;
+		dl.elMsg.removeClass('cross').addClass('loading');
+		
+		// Init
+		dl.setProgressPoints(_packages.length);
 		dl.spoolEvents();
 
+		// Exec
 		$.waterfall.apply(dl, dl.eventChain)
 			.fail(function(xhr, status, message){ dl.progressError(xhr.responseText); })
-			.done(function(){ dl.progressDone(); });
+			.done(function(){ dl.progressDone(); })
+			.always(function(){ dl.setLock(false); });
 		
 		return false;
+	}
+
+	dl.setLock = function(value) {
+		_locked = value;
+		$('#download_btn').prop('disabled', _locked);
 	}
 
 	dl.spoolEvents = function() {
 
 		// Packages
-		$.each(packages, function(key, package){
+		$.each(_packages, function(key, package){
 			
 			dl.eventChain.push(function() { 
 				dl.pushProgressForward('Downloading package: ' + package);
 				return $.post(dl.url, {
 					step: 'request_package', 
 					package_name: package,
-					install_key: install_key
+					install_key: _install_key
 				});
 			});
 
@@ -62,7 +80,7 @@ var Phpr_Downloader = (function(dl, $){
 				return $.post(dl.url, {
 					step: 'unzip_package', 
 					package_name: package,
-					install_key: install_key
+					install_key: _install_key
 				});
 			});
 		});
@@ -73,7 +91,7 @@ var Phpr_Downloader = (function(dl, $){
 			return $.post(dl.url, {
 				step: 'install_phpr',
 				action: 'generate_files',
-				install_key: install_key
+				install_key: _install_key
 			});
 		});
 
@@ -82,7 +100,7 @@ var Phpr_Downloader = (function(dl, $){
 			return $.post(dl.url, {
 				step: 'install_phpr',
 				action: 'build_database',
-				install_key: install_key
+				install_key: _install_key
 			});
 		});
 
@@ -91,7 +109,7 @@ var Phpr_Downloader = (function(dl, $){
 			return $.post(dl.url, {
 				step: 'install_phpr',
 				action: 'create_admin',
-				install_key: install_key
+				install_key: _install_key
 			});
 		});
 
@@ -100,7 +118,7 @@ var Phpr_Downloader = (function(dl, $){
 			return $.post(dl.url, {
 				step: 'install_phpr',
 				action: 'install_theme',
-				install_key: install_key
+				install_key: _install_key
 			});
 		});
 
@@ -124,8 +142,7 @@ var Phpr_Downloader = (function(dl, $){
 	}
 
 	dl.pushProgressBack = function(message) {
-		// In case 100
-		dl.elMsg.removeClass('tick');
+		dl.elMsg.removeClass('tick').addClass('loading');
 		$('#download_progress').removeClass('success');
 		$('#download_btn').show();
 		$('#next_btn, #next_txt').hide();
@@ -138,7 +155,6 @@ var Phpr_Downloader = (function(dl, $){
 		dl.elMsg.text(message);
 		dl.elBar.attr('data-percentage', percent).progressbar({
 			use_percentage: true,
-			transition_delay: 500,
 			display_text: 2,
 			update: dl.progressUpdate
 		});
@@ -146,7 +162,7 @@ var Phpr_Downloader = (function(dl, $){
 
 	dl.progressUpdate = function(amount) {
 		if (amount == 100)  {
-			dl.elMsg.addClass('tick');
+			dl.elMsg.addClass('tick').removeClass('loading');
 			$('#download_progress').addClass('success');
 			$('#download_btn').hide();
 			$('#next_btn, #next_txt').show();
@@ -162,7 +178,7 @@ var Phpr_Downloader = (function(dl, $){
 			message = 'Download error...';
 		
 		dl.pushProgressBack(message);
-		dl.elMsg.addClass('cross');
+		dl.elMsg.addClass('cross').removeClass('loading');
 		$('#download_progress').addClass('error');
 	}
 

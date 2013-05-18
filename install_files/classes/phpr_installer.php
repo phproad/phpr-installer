@@ -58,16 +58,21 @@ class Phpr_Installer
 		return $result;
 	}
 
-	public function check_remote_event()
+	public static function check_remote_event()
 	{
 		return isset($_SERVER['HTTP_PHPR_REMOTE_EVENT']);
 	}
 
-	public function throw_ajax_error($message)
+	public static function throw_fatal_error($message)
 	{
-		header('HTTP/1.1 500 Internal Server Error');
-		header('Content-Type: text/plain');  
-		echo $message;
+		if (self::check_remote_event()) {
+			header('HTTP/1.1 500 Internal Server Error');
+			header('Content-Type: text/plain');  
+			echo $message;
+		}
+		else {
+			$this->render_partial('exception', array('message'=>$message));
+		}
 	}
 
 	public function output_install_page()
@@ -81,10 +86,7 @@ class Phpr_Installer
 			// @TODO
 			//Phpr_Installer_Manager::install_cleanup();
 			
-			if ($this->check_remote_event())
-				$this->throw_ajax_error($ex->getMessage());
-			else
-				$this->render_partial('exception', array('exception'=>$ex));
+			self::throw_fatal_error($ex->getMessage());
 		}
 	}
 
@@ -126,27 +128,22 @@ class Phpr_Installer
 			case 'install_phpr':
 				$action = self::post('action');
 				Phpr_Installer_Manager::$install_key = self::post('install_key');
-				try 
+	
+				switch ($action)
 				{
-					switch ($action)
-					{
-						case 'generate_files':
-							Phpr_Installer_Manager::generate_files();
-						break;
-						case 'build_database':
-							Phpr_Installer_Manager::build_database();
-						break;
-						case 'create_admin':
-							Phpr_Installer_Manager::create_admin_account();
-						break;
-						case 'install_theme':
-							Phpr_Installer_Manager::create_default_theme();
-						break;
-					}
-				} 
-				catch (Exception $ex)
-				{
-					throw new Exception('Action '.$action.' failed: '. $ex->getMessage());
+					case 'generate_files':
+						Phpr_Installer_Manager::generate_config_file();
+						Phpr_Installer_Manager::generate_index_file();
+					break;
+					case 'build_database':
+						Phpr_Installer_Manager::build_database();
+					break;
+					case 'create_admin':
+						Phpr_Installer_Manager::create_admin_account();
+					break;
+					case 'install_theme':
+						Phpr_Installer_Manager::create_default_theme();
+					break;
 				}
 			break;
 
@@ -336,9 +333,7 @@ class Phpr_Installer
 				$error = null;
 				try
 				{
-					// Finalize installation
-					Phpr_Installer_Manager::install_cleanup();
-
+					Phpr_Installer_Manager::finish_install();
 				}
 				catch (Exception $ex)
 				{
@@ -543,4 +538,12 @@ class ValidationException extends Exception
 		parent::__construct($message);
 		$this->field = $field;
 	}
+}
+
+register_shutdown_function('phpr_installer_shutdown');
+function phpr_installer_shutdown() {
+	$error = error_get_last();
+	if ($error['type'] == 1) {
+		Phpr_Installer::throw_fatal_error($error['message']);
+	} 
 }

@@ -2,8 +2,7 @@
 
 class Phpr_Installer_Manager
 {
-
-	private static $install_key = null;
+	public static $install_key = null;
 
 	const uri_get_install_package = 'install/package/get';
 	const uri_get_install_file = 'install/file/get';
@@ -355,58 +354,6 @@ class Phpr_Installer_Manager
 	 * Installation Logic
 	 */
 
-	public static function generate_files()
-	{
-		// Validate framework exists first
-		if (!file_exists(PATH_INSTALL.'/index.php') || !file_exists(PATH_INSTALL.'/framework/boot.php'))
-			throw new Exception('Fatal Error: Unable to locate framework boot file after install');
-
-		// Check if existing .htaccess file defines the PHP5 handler
-		// and capture it's original content
-		$php5_handler = null;
-		$original_htaccess_contents = null;
-		if (file_exists(PATH_INSTALL.'/.htaccess'))
-		{
-			$original_htaccess_contents = $ht_contents = file_get_contents(PATH_INSTALL.'/.htaccess');
-			$matches = array();
-			if (preg_match('/AddHandler\s+(.*)\s+\.php/im', $ht_contents, $matches))
-				$php5_handler = trim($matches[0]);
-		}
-
-		try
-		{
-			// Generate config file
-			self::generate_config_file();
-			self::generate_htaccess_file($php5_handler);
-			self::generate_index_file();
-		}
-		catch (Exception $ex)
-		{
-			$ht_file = PATH_INSTALL.'/.htaccess';
-			if (file_exists($ht_file))
-				@unlink($ht_file);
-
-			if ($original_htaccess_contents)
-				@file_put_contents($ht_file, $original_htaccess_contents);
-		
-			throw $ex;
-		}
-	}
-
-	// Create .htaccess file
-	public static function generate_htaccess_file($php5_handler)
-	{
-		if (!@copy(PATH_INSTALL_APP.'/install_files/templates/htaccess.tpl', PATH_INSTALL.'/.htaccess'))
-			throw new Exception('Unable to create the .htaccess file: '.PATH_INSTALL.'/.htaccess');
-			
-		if ($php5_handler)
-		{
-			$ht_contents = file_get_contents(PATH_INSTALL.'/.htaccess');
-			$ht_contents = $php5_handler."\n\n".$ht_contents;
-			@file_put_contents(PATH_INSTALL.'/.htaccess', $ht_contents);
-		}
-	}
-
 	// Generate config file
 	public static function generate_config_file()
 	{
@@ -456,13 +403,22 @@ class Phpr_Installer_Manager
 		@chmod($index_file_path, $file_permissions);
 	}
 
-	// Create database objects
-	public static function build_database()
+	public static function boot_framework()
 	{
+		// Validate framework exists first
+		if (!file_exists(PATH_INSTALL.'/framework/boot.php'))
+			throw new Exception('Unable to boot framework');
+
 		global $APP_CONF;
 		$APP_CONF = array();
 		$PHPR_INIT_ONLY = true;
 		include PATH_INSTALL.'/index.php';
+	}
+
+	// Create database objects
+	public static function build_database()
+	{
+		self::boot_framework();
 
 		$crypt = Phpr_Installer_Crypt::create();
 		$config_content = array();
@@ -494,6 +450,8 @@ class Phpr_Installer_Manager
 	// Create administrator account
 	public static function create_admin_account()
 	{
+		self::boot_framework();
+
 		$crypt = Phpr_Installer_Crypt::create();
 		$admin_user_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params5.dat', self::$install_key);
 
@@ -512,6 +470,8 @@ class Phpr_Installer_Manager
 	// Create the default theme
 	public static function create_default_theme()
 	{
+		self::boot_framework();
+
 		$theme = new Cms_Theme();
 	
 		$crypt = Phpr_Installer_Crypt::create();
@@ -526,6 +486,51 @@ class Phpr_Installer_Manager
 		$theme->save();
 
 		Cms_Theme::auto_create_all_from_files();
+	}
+
+	// Finalise installation
+	public static function install_finish()
+	{
+		// Check if existing .htaccess file defines the PHP5 handler
+		// and capture it's original content
+		$php5_handler = null;
+		$original_htaccess_contents = null;
+		if (file_exists(PATH_INSTALL.'/.htaccess'))
+		{
+			$original_htaccess_contents = $ht_contents = file_get_contents(PATH_INSTALL.'/.htaccess');
+			$matches = array();
+			if (preg_match('/AddHandler\s+(.*)\s+\.php/im', $ht_contents, $matches))
+				$php5_handler = trim($matches[0]);
+		}
+
+		try
+		{
+			// Create .htaccess file
+			if (!@copy(PATH_INSTALL_APP.'/install_files/templates/htaccess.tpl', PATH_INSTALL.'/.htaccess'))
+				throw new Exception('Unable to create the .htaccess file: '.PATH_INSTALL.'/.htaccess');
+				
+			if ($php5_handler)
+			{
+				$ht_contents = file_get_contents(PATH_INSTALL.'/.htaccess');
+				$ht_contents = $php5_handler."\n\n".$ht_contents;
+				@file_put_contents(PATH_INSTALL.'/.htaccess', $ht_contents);
+			}
+
+			// Clean up
+			self::install_cleanup();
+
+		}
+		catch (Exception $ex)
+		{
+			$ht_file = PATH_INSTALL.'/.htaccess';
+			if (file_exists($ht_file))
+				@unlink($ht_file);
+
+			if ($original_htaccess_contents)
+				@file_put_contents($ht_file, $original_htaccess_contents);
+		
+			throw $ex;
+		}
 	}
 
 	public static function install_cleanup()

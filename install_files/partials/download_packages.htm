@@ -30,7 +30,7 @@
 
 	<script type="text/javascript">
 
-		dl.setPackages('<?php echo Phpr_Installer::get_request_uri() ?>', [<?=Phpr_Installer_Manager::get_package_list()?>], '<?php echo Phpr_Installer::post('install_key') ?>');
+		Phpr_Downloader.setPackages('<?php echo Phpr_Installer::get_request_uri() ?>', [<?=Phpr_Installer_Manager::get_package_list()?>], '<?php echo Phpr_Installer::post('install_key') ?>');
 
 		$(document).ready(function(){ 
 			$('#step_form').submit(function() {
