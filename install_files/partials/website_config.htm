@@ -18,16 +18,16 @@
 
 		<fieldset>
 			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'license_name') ?>">
-				<label for="license_name">Website Name</label>
+				<label for="license_name"><?= Phpr_Installer::lang('LICENSE_NAME', 'Website Name') ?></label>
 				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('license_name')) ?>" type="text" name="license_name" id="license_name" class="text" />
 			</div>
 			<div class="control <?php echo Phpr_Installer::error_marker($error_field, 'installation_key') ?>">
-				<label for="installation_key">Installation Key</label>
+				<label for="installation_key"><?= Phpr_Installer::lang('INSTALLATION_KEY', 'Installation Key') ?></label>
 				<input autocomplete="off" value="<?php echo Phpr_Installer::h(Phpr_Installer::post('installation_key')) ?>" type="text" name="installation_key" id="installation_key" class="text" />
 			</div>
 			<? if (!defined('DISABLE_KEYLESS_ENTRY')): ?>
 				<div class="control checkbox">
-					<label><input type="checkbox" name="generate_key" id="generate_key" value="1" /> I do not have an installation key.</label>
+					<label><input type="checkbox" name="generate_key" id="generate_key" value="1" /> <?= Phpr_Installer::lang('USE_KEYLESS_ENTRY', 'I do not have an installation key.') ?></label>
 				</div>
 			<? endif ?>
 		</fieldset>

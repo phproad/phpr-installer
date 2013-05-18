@@ -448,6 +448,15 @@ class Phpr_Installer
 		return $default;
 	}
 
+	public static function lang($code, $default = null)
+	{
+		global $PHPR_INSTALLER_LANG;
+
+		return (isset($PHPR_INSTALLER_LANG[$code]))
+			? $PHPR_INSTALLER_LANG[$code]
+			: $default;
+	}
+
 	public static function h($str)
 	{
 		return htmlentities($str, ENT_COMPAT, 'UTF-8');
