@@ -17,7 +17,8 @@ ini_set('date.timezone', 'AEST');
 ini_set('display_errors', 0);
 error_reporting(0);
 
-include "install_crypt.php";
+include "phpr_installer_lang.php";
+include "phpr_installer_crypt.php";
 include "phpr_installer_manager.php";
 include "zip_helper.php";
 

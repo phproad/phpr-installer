@@ -156,10 +156,10 @@ class Phpr_Installer_Manager
 	public function validate_website_config($license_name, $installation_key, $generate_key)
 	{
 		if (!strlen($license_name))
-			throw new ValidationException('Please enter your website name.', 'license_name');
+			throw new ValidationException(Phpr_Installer::lang('ERROR_LICENSE_NAME'), 'license_name');
 
 		if (!strlen($installation_key) && (defined('DISABLE_KEYLESS_ENTRY') || !$generate_key))
-			throw new ValidationException('Please enter installation key.', 'installation_key');
+			throw new ValidationException(Phpr_Installer::lang('ERROR_INSTALLATION_KEY'), 'installation_key');
 
 		if ($generate_key)
 			$hash = 'keyless';
