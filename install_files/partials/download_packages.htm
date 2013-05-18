@@ -17,7 +17,7 @@
 
 		<div class="form-actions">
 			<div class="pull-right">
-				<input type="button" class="button" value="Download" id="download_btn" onclick="return start_download()" />
+				<input type="button" class="button" value="Download" id="download_btn" onclick="return Phpr_Downloader.startDownload()" />
 				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" style="display:none" />
 			</div>
 			<?php if (isset($error)): ?>
@@ -30,10 +30,7 @@
 
 	<script type="text/javascript">
 
-		function start_download() {
-			Phpr_Downloader.get_packages('<?php echo Phpr_Installer::get_request_uri() ?>', [<?=Phpr_Installer_Manager::get_package_list()?>], '<?php echo Phpr_Installer::post('install_key') ?>');
-			return false;
-		}
+		dl.setPackages('<?php echo Phpr_Installer::get_request_uri() ?>', [<?=Phpr_Installer_Manager::get_package_list()?>], '<?php echo Phpr_Installer::post('install_key') ?>');
 
 		$(document).ready(function(){ 
 			$('#step_form').submit(function() {

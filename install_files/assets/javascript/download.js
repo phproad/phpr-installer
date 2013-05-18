@@ -1,17 +1,20 @@
 var Phpr_Downloader = (function(dl, $){
 
     dl.url = null;
-    dl.el_bar = null;
-    dl.el_msg = null;
-    dl.event_chain = [];
+    dl.elBar = null;
+    dl.elMsg = null;
+    dl.eventChain = [];
 
-    dl.total_progress_points = 1;
-    dl.current_progress_point = 0;
+    dl.totalProgressPoints = 0;
+    dl.currentProgressPoint = 0;
+
+    var _packages, 
+        _install_key;
 
     dl.constructor = $(function() {
 
-        dl.el_bar = $('#download_progress .progress .bar');
-        dl.el_msg = $('#download_progress small');
+        dl.elBar = $('#download_progress .progress .bar');
+        dl.elMsg = $('#download_progress small');
 
         $.ajaxSetup({
             beforeSend: function(request) {
@@ -21,17 +24,28 @@ var Phpr_Downloader = (function(dl, $){
 
     });
 
-    dl.get_packages = function(url, packages, install_key) {
+    dl.startDownload = function() {
+        
+        dl.elMsg.removeClass('cross').addClass('loading');
+        dl.setProgressPoints(_packages.length);
 
+        dl.spoolPackages();
+        
+        return false;
+    }
+
+
+    dl.setPackages = function(url, packages, install_key) {
         dl.url = url;
-        dl.el_msg.removeClass('cross').addClass('loading');
+        _packages = packages;
+        _install_key = install_key;
+    }
 
-        dl.set_progress_points(packages.length);
-
+    dl.spoolPackages = function() {
         $.each(packages, function(key, package){
             
-            dl.event_chain.push(function() { 
-                dl.push_progress_forward('Requesting package: ' + package);
+            dl.eventChain.push(function() { 
+                dl.pushProgressForward('Downloading package: ' + package);
                 return $.post(dl.url, {
                     step: 'request_package', 
                     package_name: package,
@@ -39,8 +53,8 @@ var Phpr_Downloader = (function(dl, $){
                 });
             });
 
-            dl.event_chain.push(function() { 
-                dl.push_progress_forward('Uncompressing package: ' + package);
+            dl.eventChain.push(function() { 
+                dl.pushProgressForward('Uncompressing package: ' + package);
                 return $.post(dl.url, {
                     step: 'unzip_package', 
                     package_name: package,
@@ -49,62 +63,67 @@ var Phpr_Downloader = (function(dl, $){
             });
         });
 
-        $.waterfall.apply(dl, dl.event_chain)
-            .fail(function(xhr, status, message){ dl.progress_error(xhr.responseText); })
-            .done(function(){ dl.progress_done(); });
+        $.waterfall.apply(dl, dl.eventChain)
+            .fail(function(xhr, status, message){ dl.progressError(xhr.responseText); })
+            .done(function(){ dl.progressDone(); });
     }
 
-    dl.set_progress_points = function(package_num) {
-        dl.total_progress_points = package_num * 2;
+    dl.setProgressPoints = function(package_num) {
+        dl.totalProgressPoints += package_num; // Download
+        dl.totalProgressPoints += package_num; // Unzip
+        dl.totalProgressPoints += 1; // Generate files
+        dl.totalProgressPoints += 1; // Build database
+        dl.totalProgressPoints += 1; // Install theme
+        dl.totalProgressPoints += 1; // Verify
     }
 
-    dl.push_progress_forward = function(message) {
-        dl.current_progress_point++;
-        var percent_chunk = 100 / dl.total_progress_points;
-        var percent_amt = Math.round(percent_chunk * dl.current_progress_point);
-        dl.set_progress(message, percent_amt);
+    dl.pushProgressForward = function(message) {
+        dl.currentProgressPoint++;
+        var percent_chunk = 100 / dl.totalProgressPoints;
+        var percent_amt = Math.round(percent_chunk * dl.currentProgressPoint);
+        dl.setProgress(message, percent_amt);
     }
 
-    dl.push_progress_back = function(message) {
+    dl.pushProgressBack = function(message) {
         // In case 100
-        dl.el_msg.removeClass('tick');
+        dl.elMsg.removeClass('tick');
         $('#download_progress').removeClass('success');
         $('#download_btn').show();
         $('#next_btn, #next_txt').hide();
 
-        dl.current_progress_point -= 2;
-        dl.push_progress_forward(message);
+        dl.currentProgressPoint -= 2;
+        dl.pushProgressForward(message);
     }
 
-    dl.set_progress = function(message, percent) {
-        dl.el_msg.text(message);
-        dl.el_bar.attr('data-percentage', percent).progressbar({
+    dl.setProgress = function(message, percent) {
+        dl.elMsg.text(message);
+        dl.elBar.attr('data-percentage', percent).progressbar({
             use_percentage: true,
             transition_delay: 500,
             display_text: 2,
-            update: dl.progress_update
+            update: dl.progressUpdate
         });
     }
 
-    dl.progress_update = function(amount) {
+    dl.progressUpdate = function(amount) {
         if (amount == 100)  {
-            dl.el_msg.addClass('tick');
+            dl.elMsg.addClass('tick');
             $('#download_progress').addClass('success');
             $('#download_btn').hide();
             $('#next_btn, #next_txt').show();
-            dl.el_msg.text('Download complete');
+            dl.elMsg.text('Download complete');
         }
     }
-    dl.progress_done = function() {
-        dl.set_progress('Verifying packages', 100);
+    dl.progressDone = function() {
+        dl.setProgress('Verifying installation', 100);
     }
 
-    dl.progress_error = function(message){
+    dl.progressError = function(message){
         if (!message)
             message = 'Download error...';
         
-        dl.push_progress_back(message);
-        dl.el_msg.addClass('cross');
+        dl.pushProgressBack(message);
+        dl.elMsg.addClass('cross');
         $('#download_progress').addClass('error');
     }
 
