@@ -330,23 +330,21 @@ class Phpr_Installer
 			break;
 
 			case 'download_packages':
-				$error = null;
 				try
 				{
 					Phpr_Installer_Manager::finish_install();
+
+					$files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');
+					$params = array(
+						'base_url' => $this->get_base_url(), 
+						'files_deleted' => $files_deleted
+					);
+					$this->render_partial('complete', $params);
 				}
 				catch (Exception $ex)
 				{
-					$error = $ex;
+					$this->throw_fatal_error($ex->getMessage());
 				}
-
-				$files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');
-				$params = array(
-					// 'error' => $error, 
-					'base_url' => $this->get_base_url(), 
-					'files_deleted' => $files_deleted
-				);
-				$this->render_partial('complete', $params);
 			break;
 		}
 	}

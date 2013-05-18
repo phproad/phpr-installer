@@ -12,6 +12,13 @@ $LANG['ERROR_INSTALLATION_KEY'] = 'Please enter installation key.';
 
 $LANG['LABEL_KEYLESS_ENTRY'] = 'I do not have an installation key.';
 
+//
+// Exception
+//
+
+$LANG['TITLE_EXCEPTION'] = 'Oh noes!';
+$LANG['SUBTITLE_EXCEPTION'] = 'Something went horribly wrong during the installation.';
+
 // 
 // Mixin defaults to global language variable
 // 
