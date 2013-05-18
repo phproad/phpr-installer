@@ -96,7 +96,7 @@ var Phpr_Downloader = (function(dl, $){
 		});
 
 		dl.eventChain.push(function() {
-			dl.pushProgressForward('Building database schema');
+			dl.pushProgressForward('Building database structure');
 			return $.post(dl.url, {
 				step: 'install_phpr',
 				action: 'build_database',

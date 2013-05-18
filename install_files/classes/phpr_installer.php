@@ -332,7 +332,7 @@ class Phpr_Installer
 			case 'download_packages':
 				try
 				{
-					Phpr_Installer_Manager::finish_install();
+					Phpr_Installer_Manager::install_finish();
 
 					$files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');
 					$params = array(
