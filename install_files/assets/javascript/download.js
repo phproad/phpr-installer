@@ -24,24 +24,28 @@ var Phpr_Downloader = (function(dl, $){
 
     });
 
-    dl.startDownload = function() {
-        
-        dl.elMsg.removeClass('cross').addClass('loading');
-        dl.setProgressPoints(_packages.length);
-
-        dl.spoolPackages();
-        
-        return false;
-    }
-
-
     dl.setPackages = function(url, packages, install_key) {
         dl.url = url;
         _packages = packages;
         _install_key = install_key;
     }
 
-    dl.spoolPackages = function() {
+    dl.startDownload = function() {
+        dl.elMsg.removeClass('cross').addClass('loading');
+        dl.setProgressPoints(_packages.length);
+
+        dl.spoolEvents();
+
+        $.waterfall.apply(dl, dl.eventChain)
+            .fail(function(xhr, status, message){ dl.progressError(xhr.responseText); })
+            .done(function(){ dl.progressDone(); });
+        
+        return false;
+    }
+
+    dl.spoolEvents = function() {
+
+        // Packages
         $.each(packages, function(key, package){
             
             dl.eventChain.push(function() { 
@@ -63,9 +67,43 @@ var Phpr_Downloader = (function(dl, $){
             });
         });
 
-        $.waterfall.apply(dl, dl.eventChain)
-            .fail(function(xhr, status, message){ dl.progressError(xhr.responseText); })
-            .done(function(){ dl.progressDone(); });
+        // Installation
+        dl.eventChain.push(function() {
+            dl.pushProgressForward('Creating system files');
+            return $.post(dl.url, {
+                step: 'install_phpr',
+                action: 'generate_files',
+                install_key: install_key
+            });
+        });
+
+        dl.eventChain.push(function() {
+            dl.pushProgressForward('Building database schema');
+            return $.post(dl.url, {
+                step: 'install_phpr',
+                action: 'build_database',
+                install_key: install_key
+            });
+        });
+
+        dl.eventChain.push(function() {
+            dl.pushProgressForward('Creating administrator account');
+            return $.post(dl.url, {
+                step: 'install_phpr',
+                action: 'create_admin',
+                install_key: install_key
+            });
+        });
+
+        dl.eventChain.push(function() {
+            dl.pushProgressForward('Installing theme components');
+            return $.post(dl.url, {
+                step: 'install_phpr',
+                action: 'install_theme',
+                install_key: install_key
+            });
+        });
+
     }
 
     dl.setProgressPoints = function(package_num) {
@@ -73,6 +111,7 @@ var Phpr_Downloader = (function(dl, $){
         dl.totalProgressPoints += package_num; // Unzip
         dl.totalProgressPoints += 1; // Generate files
         dl.totalProgressPoints += 1; // Build database
+        dl.totalProgressPoints += 1; // Create admin
         dl.totalProgressPoints += 1; // Install theme
         dl.totalProgressPoints += 1; // Verify
     }

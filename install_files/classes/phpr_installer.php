@@ -119,8 +119,35 @@ class Phpr_Installer
 
 				if (!isset($core_modules[$package_name]))
 					throw new Exception('Unknown package with name '.$package_name);
-
+				
 				Phpr_Installer_Manager::unzip_package($package_name);
+			break;
+
+			case: 'install_phpr':
+				$action = self::post('action');
+				Phpr_Installer_Manager::$install_key = self::post('install_key');
+				try 
+				{
+					switch ($action)
+					{
+						case 'generate_files':
+							Phpr_Installer_Manager::generate_files();
+						break;
+						case 'build_database':
+							Phpr_Installer_Manager::build_database();
+						break;
+						case 'create_admin':
+							Phpr_Installer_Manager::create_admin_account();
+						break;
+						case 'install_theme':
+							Phpr_Installer_Manager::create_default_theme();
+						break;
+					}
+				} 
+				catch (Exception $ex)
+				{
+					throw new Exception('Action '.$action.' failed: '. $ex->getMessage());
+				}
 			break;
 
 			// Controller steps
@@ -309,7 +336,9 @@ class Phpr_Installer
 				$error = null;
 				try
 				{
-					Phpr_Installer_Manager::install_phpr(self::post('install_key'));
+					// Finalize installation
+					Phpr_Installer_Manager::install_cleanup();
+
 				}
 				catch (Exception $ex)
 				{
@@ -318,7 +347,7 @@ class Phpr_Installer
 
 				$files_deleted = !file_exists(PATH_INSTALL_APP.'') && !file_exists(PATH_INSTALL.'/install.php');
 				$params = array(
-					'error' => $error, 
+					// 'error' => $error, 
 					'base_url' => $this->get_base_url(), 
 					'files_deleted' => $files_deleted
 				);

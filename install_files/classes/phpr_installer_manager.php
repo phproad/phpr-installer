@@ -355,9 +355,11 @@ class Phpr_Installer_Manager
 	 * Installation Logic
 	 */
 
-	public static function install_phpr($install_key)
+	public static function generate_files()
 	{
-		self::$install_key = $install_key;
+		// Validate framework exists first
+		if (!file_exists(PATH_INSTALL.'/index.php') || !file_exists(PATH_INSTALL.'/framework/boot.php'))
+			throw new Exception('Fatal Error: Unable to locate framework boot file after install');
 
 		// Check if existing .htaccess file defines the PHP5 handler
 		// and capture it's original content
@@ -375,20 +377,8 @@ class Phpr_Installer_Manager
 		{
 			// Generate config file
 			self::generate_config_file();
-			self::generate_htaccess_file();
+			self::generate_htaccess_file($php5_handler);
 			self::generate_index_file();
-
-			// Validate framework exists
-			if (!file_exists(PATH_INSTALL.'/index.php') || !file_exists(PATH_INSTALL.'/framework/boot.php'))
-				throw new Exception('Fatal Error: Unable to locate framework boot file after install');
-
-			// Build base elements
-			self::build_database();
-			self::create_admin_account();
-			self::create_default_theme();
-
-			// Finalize installation
-			self::install_cleanup();
 		}
 		catch (Exception $ex)
 		{
