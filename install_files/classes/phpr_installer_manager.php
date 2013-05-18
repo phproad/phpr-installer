@@ -375,6 +375,7 @@ class Phpr_Installer_Manager
 		{
 			// Generate config file
 			self::generate_config_file();
+			self::generate_htaccess_file();
 			self::generate_index_file();
 
 			// Validate framework exists
