@@ -12,7 +12,7 @@
 define('APP_NAME', 'PHPRoad'); 
 define('URL_TERMS', 'http://phproad.com/resources/phpr-license.txt');
 define('URL_DOCS', 'http://phproad.com/docs');
-define('URL_GATEWAY', 'http://phproad.com/update_gateway');
+define('URL_GATEWAY', 'http://api.phproad.com/update_gateway');
 
 $is_php4 = version_compare(PHP_VERSION, '5.0.0', '<');
 define('DS', DIRECTORY_SEPARATOR);
