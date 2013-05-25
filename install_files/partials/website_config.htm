@@ -1,7 +1,7 @@
 <div id="partial_website_config">
 	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post" id="step_form">
 		<input type="hidden" name="step" value="website_config" />
-		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
+		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key', md5(Phpr_Installer::gen_install_key())) ?>" />
 		
 		<h1>Website Information</h1>
 		<p>Please enter your website name and installation key in the form below. For more information please see <a href="<?php echo URL_DOCS ?>" target="_blank">the documentation</a>.</p>
