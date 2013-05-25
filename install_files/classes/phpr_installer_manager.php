@@ -59,11 +59,11 @@ class Phpr_Installer_Manager
 		return $tmp_file;
 	}
 
-	public static function unzip_package($name)
+	public static function unzip_package($name, $type)
 	{
 		$name = strtolower($name);
 		$installer = Phpr_Installer::create();
-		$package_info = $installer->get_package_info($name);
+		$package_info = $installer->get_package_info($name, $type);
 		if (!$package_info)
 			throw new Exception('Unable to find package information for '. $name);
 

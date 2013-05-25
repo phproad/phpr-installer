@@ -124,7 +124,7 @@ class Phpr_Installer
 				if (!isset($core_modules[$package_name]))
 					throw new Exception('Unknown package with name '.$package_name);
 				
-				Phpr_Installer_Manager::unzip_package($package_name);
+				Phpr_Installer_Manager::unzip_package($package_name, $package_type);
 			break;
 
 			case 'install_phpr':
@@ -360,22 +360,31 @@ class Phpr_Installer
 		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
 		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
 		$file_hashes = array();
-		foreach ($package_info as $key=>$package) {
+		foreach ($package_info as $package) {
 
 			if ($package->type != $type)
 				continue;
 
-			$file_hashes[$key] = $package->hash;
+			$code = $package->short_code;
+			$file_hashes[$code] = $package->hash;
 		}
 		return $file_hashes;
 	}
 
-	public function get_package_info($name) 
+	public function get_package_info($name, $type) 
 	{
 		$crypt = Phpr_Installer_Crypt::create();
 		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
 		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
-		return isset($package_info[$name]) ? $package_info[$name] : null;
+
+		foreach ($package_info as $package) {
+			if ($package->type != $type)
+				continue;
+
+			if ($package->short_code == $name)
+				return $package;
+		}
+		return null;
 	}
 
 	public function get_hash()
