@@ -17,11 +17,12 @@ class Phpr_Installer_Manager
 		return "'" . implode("','", array_keys($installer->get_file_hashes($type))) . "'";
 	}
 
-	public static function download_package($hash, $name, $expected_hash)
+	public static function download_package($hash, $name, $type, $expected_hash)
 	{
 		$params = array(
 			'hash' => $hash,
-			'code' => $name
+			'code' => $name,
+			'type' => $type
 		);
 
 		$tmp_file = self::get_package_file_path($name);
