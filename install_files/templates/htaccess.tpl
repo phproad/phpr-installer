@@ -24,7 +24,6 @@ RewriteCond %{REQUEST_URI} !(\.(ico|js|jpg|gif|css|less|png|swf|txt|xml|xls|eot|
 RewriteCond %{REQUEST_URI} !(framework/vendor/.*)
 RewriteRule ^(.*)$ index.php?q=/$1 [L,QSA]
 
-
 ErrorDocument 404 "File not found"
 
 #

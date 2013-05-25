@@ -189,10 +189,9 @@ class Phpr_Installer_Manager
 
 		$install_params = array(
 			'name'         => $name,
-			'hash'         => $hash,
 			'birthmark'    => $birthmark,
+			'hash'         => $hash,
 			'key'          => $license_key,
-			'license_name' => $license_name,
 			'app_name'     => $application_name,
 			'app_image'    => $application_image,
 			'theme_name'   => $theme_name,
@@ -425,8 +424,9 @@ class Phpr_Installer_Manager
 
 		$license_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::$install_key);
 		$config_content['birthmark'] = $birthmark = $license_params['birthmark'];
-		$config_content['license_key'] = $license_key = $license_params['key'];
 		$config_content['license_name'] = $license_name = $license_params['name'];
+		$config_content['license_key'] = $license_key = $license_params['key'];
+		$config_content['license_hash'] = $license_hash = $license_params['hash'];
 		
 		$encrypt_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params6.dat', self::$install_key);
 		$config_content['config_key']  = $encrypt_params['enc_key'];
@@ -439,8 +439,9 @@ class Phpr_Installer_Manager
 		Db_Update_Manager::update();
 
 		Phpr_Module_Parameters::set('core', 'birthmark', $birthmark);  
-		Phpr_Module_Parameters::set('core', 'license_key', base64_encode($framework->encrypt($license_key)));
 		Phpr_Module_Parameters::set('core', 'license_name', base64_encode($framework->encrypt($license_name)));
+		Phpr_Module_Parameters::set('core', 'license_key', base64_encode($framework->encrypt($license_key)));
+		Phpr_Module_Parameters::set('core', 'license_hash', base64_encode($framework->encrypt($license_hash)));
 		Phpr_Module_Parameters::set('core', 'app_name', $license_params['app_name']);
 		Phpr_Module_Parameters::set('core', 'app_image', $license_params['app_image']);
 		Phpr_Module_Parameters::set('core', 'vendor_name', $license_params['vendor_name']);

@@ -12,7 +12,7 @@ if (!isset($CONFIG))
 $CONFIG['APP_NAME'] = "%APP_NAME%";
 $CONFIG['BACKEND_URL'] = '%ADMIN_URL%';
 
-if ( !defined('PATH_APP') )
+if (!defined('PATH_APP'))
 	return;
 
 $CONFIG['DEV_MODE'] = false;
