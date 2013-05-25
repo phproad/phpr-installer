@@ -8,7 +8,8 @@ var Phpr_Downloader = (function(dl, $){
 	dl.totalProgressPoints = 0;
 	dl.currentProgressPoint = 0;
 
-	var _packages, 
+	var _modules, 
+		_themes, 
 		_install_key,
 		_locked = false;
 
@@ -25,10 +26,17 @@ var Phpr_Downloader = (function(dl, $){
 
 	});
 
-	dl.setPackages = function(url, packages, install_key) {
+	dl.setRequestInfo = function(url, install_key) {
 		dl.url = url;
-		_packages = packages;
 		_install_key = install_key;
+	}
+
+	dl.setModules = function(modules) {
+		_modules = modules;
+	}
+	
+	dl.setThemes = function(themes) {
+		_themes = themes;
 	}
 
 	dl.startDownload = function() {
@@ -44,7 +52,7 @@ var Phpr_Downloader = (function(dl, $){
 		dl.elMsg.removeClass('cross').addClass('loading');
 		
 		// Init
-		dl.setProgressPoints(_packages.length);
+		dl.setProgressPoints(_modules.length + _themes.length);
 		dl.spoolEvents();
 
 		// Exec
@@ -63,29 +71,64 @@ var Phpr_Downloader = (function(dl, $){
 
 	dl.spoolEvents = function() {
 
-		// Packages
-		$.each(_packages, function(key, package){
+		//
+		// Modules
+		// 
+		
+		$.each(_modules, function(key, module){
 			
 			dl.eventChain.push(function() { 
-				dl.pushProgressForward('Downloading package: ' + package);
+				dl.pushProgressForward('Downloading module: ' + module);
 				return $.post(dl.url, {
-					step: 'request_package', 
-					package_name: package,
+					step: 'request_package',
+					package_name: module,
+					package_type: 'module',
 					install_key: _install_key
 				});
 			});
 
 			dl.eventChain.push(function() { 
-				dl.pushProgressForward('Uncompressing package: ' + package);
+				dl.pushProgressForward('Uncompressing module: ' + module);
 				return $.post(dl.url, {
-					step: 'unzip_package', 
-					package_name: package,
+					step: 'unzip_package',
+					package_name: module,
+					package_type: 'module',
 					install_key: _install_key
 				});
 			});
 		});
 
+		//
+		// Themes
+		// 
+		
+		$.each(_themes, function(key, theme){
+			
+			dl.eventChain.push(function() { 
+				dl.pushProgressForward('Downloading theme: ' + theme);
+				return $.post(dl.url, {
+					step: 'request_package',
+					package_name: theme,
+					package_type: 'theme',
+					install_key: _install_key
+				});
+			});
+
+			dl.eventChain.push(function() { 
+				dl.pushProgressForward('Uncompressing theme: ' + theme);
+				return $.post(dl.url, {
+					step: 'unzip_package',
+					package_name: theme,
+					package_type: 'theme',
+					install_key: _install_key
+				});
+			});
+		});
+
+		//
 		// Installation
+		// 
+		
 		dl.eventChain.push(function() {
 			dl.pushProgressForward('Creating system files');
 			return $.post(dl.url, {

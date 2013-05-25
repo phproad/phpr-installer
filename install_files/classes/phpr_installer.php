@@ -100,7 +100,8 @@ class Phpr_Installer
 			
 			case 'request_package':
 				$package_name = self::post('package_name');
-				$core_modules = $this->get_file_hashes();
+				$package_type = self::post('package_type');
+				$core_modules = $this->get_file_hashes($package_type);
 				$hash = $this->get_hash();
 				
 				if (!strlen(trim($package_name)))
@@ -114,7 +115,8 @@ class Phpr_Installer
 
 			case 'unzip_package':
 				$package_name = self::post('package_name');
-				$core_modules = $this->get_file_hashes();
+				$package_type = self::post('package_type');
+				$core_modules = $this->get_file_hashes($package_type);
 
 				if (!strlen(trim($package_name)))
 					throw new Exception('No packages to to process');
@@ -352,13 +354,17 @@ class Phpr_Installer
 	// Services
 	// 
 
-	public function get_file_hashes()
+	public function get_file_hashes($type)
 	{
 		$crypt = Phpr_Installer_Crypt::create();
 		$params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params1.dat', self::post('install_key'));
 		$package_info = (isset($params['package_info'])) ? $params['package_info'] : array();
 		$file_hashes = array();
 		foreach ($package_info as $key=>$package) {
+
+			if ($package->type != $type)
+				continue;
+
 			$file_hashes[$key] = $package->hash;
 		}
 		return $file_hashes;

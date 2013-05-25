@@ -11,10 +11,10 @@ class Phpr_Installer_Manager
 	 * Package Specific
 	 */ 
 	
-	public static function get_package_list()
+	public static function get_package_list($type)
 	{
 		$installer = Phpr_Installer::create();
-		return "'" . implode("','", array_keys($installer->get_file_hashes())) . "'";
+		return "'" . implode("','", array_keys($installer->get_file_hashes($type))) . "'";
 	}
 
 	public static function download_package($hash, $name, $expected_hash)
@@ -66,7 +66,7 @@ class Phpr_Installer_Manager
 		if (!$package_info)
 			throw new Exception('Unable to find package information for '. $name);
 
-		$code = $package_info->code;
+		$code = $package_info->short_code;
 		$tmp_file = self::get_package_file_path($name);
 		$tmp_path = dirname($tmp_file).DS.$name.DS;
 

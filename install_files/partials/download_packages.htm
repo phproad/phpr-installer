@@ -30,7 +30,9 @@
 
 	<script type="text/javascript">
 
-		Phpr_Downloader.setPackages('<?php echo Phpr_Installer::get_request_uri() ?>', [<?=Phpr_Installer_Manager::get_package_list()?>], '<?php echo Phpr_Installer::post('install_key') ?>');
+		Phpr_Downloader.setRequestInfo('<?php echo Phpr_Installer::get_request_uri() ?>', '<?php echo Phpr_Installer::post('install_key') ?>');
+		Phpr_Downloader.setModules([<?=Phpr_Installer_Manager::get_package_list('module')?>]);
+		Phpr_Downloader.setThemes([<?=Phpr_Installer_Manager::get_package_list('theme')?>]);
 
 		$(document).ready(function(){ 
 			$('#step_form').submit(function() {
