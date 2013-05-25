@@ -110,7 +110,7 @@ class Phpr_Installer
 				if (!isset($core_modules[$package_name]))
 					throw new Exception('Unknown package with name '.$package_name);
 
-				Phpr_Installer_Manager::download_package($hash, $package_name, $core_modules[$package_name]);
+				Phpr_Installer_Manager::download_package($hash, $package_name, $package_type, $core_modules[$package_name]);
 			break;
 
 			case 'unzip_package':
