@@ -1,7 +1,7 @@
 <div id="partial_terms">
 	<form action="<?php echo Phpr_Installer::get_request_uri() ?>" method="post">
-		<input type="hidden" name="step" value="requirements" />
-		<input type="hidden" name="install_key" value="<?php echo md5(Phpr_Installer::gen_install_key()) ?>" />
+		<input type="hidden" name="step" value="requirements" />		
+		<input type="hidden" name="install_key" value="<?php echo Phpr_Installer::post('install_key') ?>" />
 		
 		<h1><?php echo APP_NAME; ?> Terms of Use</h1>
 		<p class="lead">You must read and accept the following usage agreement.</p>
