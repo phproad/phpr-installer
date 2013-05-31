@@ -53,7 +53,7 @@ class Phpr_Installer
 		$result['Short PHP tags allowed'] = ini_get('short_open_tag');
 
 		if (ini_get('safe_mode'))
-			$result['PHP Safe Mode detected '] = false;
+			$result['PHP Safe Mode detected'] = false;
 		
 		return $result;
 	}
@@ -540,6 +540,16 @@ class Phpr_Installer
 		return $base_url;
 	}
 
+	public function detect_cli()
+	{
+		if (php_sapi_name() == 'cli')
+			return true;
+	
+		if (!array_key_exists('DOCUMENT_ROOT', $_SERVER) || !strlen($_SERVER['DOCUMENT_ROOT']))
+			return true;
+
+		return false;
+	}	
 }
 
 class ValidationException extends Exception

@@ -27,6 +27,13 @@ if (!PHP4_DETECTED)
 
 	if ($installer->check_remote_event())
 		die($installer->output_install_page());
+
+	if ($installer->detect_cli()) {
+		echo "-------------------------------------------------------------------------".PHP_EOL;
+		echo "Sorry this application cannot be installed via command line at this time.".PHP_EOL; 
+		echo "-------------------------------------------------------------------------".PHP_EOL;
+		die();
+	}
 }
 
 ?>
