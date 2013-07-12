@@ -483,7 +483,7 @@ class Phpr_Installer_Manager
 		$theme->description = "Default theme for ".$app_info['name'];
 		$theme->author_website = $app_info['vendor_url'];
 		$theme->author_name = $app_info['vendor_name'];
-		$theme->default_theme = true;
+		$theme->is_default = true;
 		$theme->enabled = true;
 		$theme->save();
 
