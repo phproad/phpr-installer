@@ -466,7 +466,7 @@ class Phpr_Installer_Manager
 		$user->password_confirm = $admin_user_params['password'];
 		$user->save();
 		
-		Db_DbHelper::query("insert into admin_groups_users(admin_user_id, admin_group_id) values(:user_id, (select id from admin_groups where code='administrator'))", array('user_id'=>$user->id));
+		Db_Helper::query("insert into admin_groups_users(admin_user_id, admin_group_id) values(:user_id, (select id from admin_groups where code='administrator'))", array('user_id'=>$user->id));
 	}
 	
 	// Create the default theme
