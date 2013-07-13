@@ -12,8 +12,8 @@ if (function_exists('set_magic_quotes_runtime'))
 if (!ini_get('safe_mode'))
 	set_time_limit(3600);
 
-date_default_timezone_set('Australia/Sydney');
-ini_set('date.timezone', 'AEST');
+date_default_timezone_set('GMT');
+ini_set('date.timezone', 'GMT');
 ini_set('display_errors', 0);
 error_reporting(0);
 
