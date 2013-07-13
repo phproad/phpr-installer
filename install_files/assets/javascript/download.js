@@ -7,6 +7,7 @@ var Phpr_Downloader = (function(dl, $){
 
 	dl.totalProgressPoints = 0;
 	dl.currentProgressPoint = 0;
+	dl.resumeProgressPoint = 0;
 
 	var _modules, 
 		_themes, 
@@ -46,13 +47,10 @@ var Phpr_Downloader = (function(dl, $){
 		dl.setLock(true);
 
 		// Reset
-		dl.eventChain = [];
-		dl.totalProgressPoints = 0;
-		dl.currentProgressPoint = 0;
-		dl.elMsg.removeClass('cross').addClass('loading');
+		dl.resetEvents();
+		dl.resumeProgressPoint = 0;
 		
 		// Init
-		dl.setProgressPoints(_modules.length + _themes.length);
 		dl.spoolEvents();
 
 		// Exec
@@ -64,9 +62,39 @@ var Phpr_Downloader = (function(dl, $){
 		return false;
 	}
 
+	dl.retryDownload = function() {
+		if (_locked)
+			return;
+
+		dl.setLock(true);
+
+		dl.resetEvents();
+		
+		// Init
+		dl.spoolEvents();
+
+		// Exec
+		$.waterfall.apply(dl, dl.eventChain)
+			.fail(function(xhr, status, message){ dl.progressError(xhr.responseText); })
+			.done(function(){ dl.progressDone(); })
+			.always(function(){ dl.setLock(false); });
+
+		return false;
+	}
+
 	dl.setLock = function(value) {
 		_locked = value;
-		$('#download_btn').prop('disabled', _locked);
+		$('#download_btn, #retry_btn').prop('disabled', _locked);
+	}
+
+	dl.resetEvents = function() {
+		dl.eventChain = [];
+		dl.totalProgressPoints = 0;
+		dl.currentProgressPoint = 0;
+		dl.setProgressPoints(_modules.length + _themes.length);
+
+		// Reset the UI
+		dl.progressResume();
 	}
 
 	dl.spoolEvents = function() {
@@ -78,7 +106,9 @@ var Phpr_Downloader = (function(dl, $){
 		$.each(_modules, function(key, module){
 			
 			dl.eventChain.push(function() { 
-				dl.pushProgressForward('Downloading module: ' + module);
+				if (dl.pushProgressForward('Downloading module: ' + module))
+					return true; // Skip
+
 				return $.post(dl.url, {
 					step: 'request_package',
 					package_name: module,
@@ -88,7 +118,9 @@ var Phpr_Downloader = (function(dl, $){
 			});
 
 			dl.eventChain.push(function() { 
-				dl.pushProgressForward('Uncompressing module: ' + module);
+				if (dl.pushProgressForward('Uncompressing module: ' + module))
+					return true; // Skip
+
 				return $.post(dl.url, {
 					step: 'unzip_package',
 					package_name: module,
@@ -105,7 +137,9 @@ var Phpr_Downloader = (function(dl, $){
 		$.each(_themes, function(key, theme){
 			
 			dl.eventChain.push(function() { 
-				dl.pushProgressForward('Downloading theme: ' + theme);
+				if (dl.pushProgressForward('Downloading theme: ' + theme))
+					return true; // Skip
+
 				return $.post(dl.url, {
 					step: 'request_package',
 					package_name: theme,
@@ -115,7 +149,9 @@ var Phpr_Downloader = (function(dl, $){
 			});
 
 			dl.eventChain.push(function() { 
-				dl.pushProgressForward('Uncompressing theme: ' + theme);
+				if (dl.pushProgressForward('Uncompressing theme: ' + theme))
+					return true; // Skip
+
 				return $.post(dl.url, {
 					step: 'unzip_package',
 					package_name: theme,
@@ -130,7 +166,9 @@ var Phpr_Downloader = (function(dl, $){
 		// 
 		
 		dl.eventChain.push(function() {
-			dl.pushProgressForward('Creating system files');
+			if (dl.pushProgressForward('Creating system files'))
+				return true; // Skip
+
 			return $.post(dl.url, {
 				step: 'install_phpr',
 				action: 'generate_files',
@@ -139,7 +177,9 @@ var Phpr_Downloader = (function(dl, $){
 		});
 
 		dl.eventChain.push(function() {
-			dl.pushProgressForward('Building database structure');
+			if (dl.pushProgressForward('Building database structure'))
+				return true; // Skip
+
 			return $.post(dl.url, {
 				step: 'install_phpr',
 				action: 'build_database',
@@ -148,7 +188,9 @@ var Phpr_Downloader = (function(dl, $){
 		});
 
 		dl.eventChain.push(function() {
-			dl.pushProgressForward('Creating administrator account');
+			if (dl.pushProgressForward('Creating administrator account'))
+				return true; // Skip
+
 			return $.post(dl.url, {
 				step: 'install_phpr',
 				action: 'create_admin',
@@ -157,7 +199,9 @@ var Phpr_Downloader = (function(dl, $){
 		});
 
 		dl.eventChain.push(function() {
-			dl.pushProgressForward('Installing theme components');
+			if (dl.pushProgressForward('Installing theme components'))
+				return true; // Skip
+
 			return $.post(dl.url, {
 				step: 'install_phpr',
 				action: 'install_theme',
@@ -177,21 +221,30 @@ var Phpr_Downloader = (function(dl, $){
 		dl.totalProgressPoints += 1; // Verify
 	}
 
-	dl.pushProgressForward = function(message) {
+	dl.pushProgressForward = function(message, force) {
 		dl.currentProgressPoint++;
+
+		if (dl.currentProgressPoint <= dl.resumeProgressPoint && !force)
+			return true;
+
 		var percent_chunk = 100 / dl.totalProgressPoints;
 		var percent_amt = Math.round(percent_chunk * dl.currentProgressPoint);
 		dl.setProgress(message, percent_amt);
+		return false;
 	}
 
 	dl.pushProgressBack = function(message) {
 		dl.elMsg.removeClass('tick').addClass('loading');
 		$('#download_progress').removeClass('success');
-		$('#download_btn').show();
 		$('#next_btn, #next_txt').hide();
 
 		dl.currentProgressPoint -= 2;
-		dl.pushProgressForward(message);
+		dl.pushProgressForward(message, true);
+
+		// Resume
+		$('#download_btn').hide();
+		$('#retry_btn').show();
+		dl.resumeProgressPoint = dl.currentProgressPoint;
 	}
 
 	dl.setProgress = function(message, percent) {
@@ -207,11 +260,12 @@ var Phpr_Downloader = (function(dl, $){
 		if (amount == 100)  {
 			dl.elMsg.addClass('tick').removeClass('loading');
 			$('#download_progress').addClass('success');
-			$('#download_btn').hide();
+			$('#download_btn, #retry_btn').hide();
 			$('#next_btn, #next_txt').show();
 			dl.elMsg.text('Download complete');
 		}
 	}
+
 	dl.progressDone = function() {
 		dl.setProgress('Verifying installation', 100);
 	}
@@ -220,9 +274,15 @@ var Phpr_Downloader = (function(dl, $){
 		if (!message)
 			message = 'Download error...';
 		
+		dl.elBar.addClass('bar-danger');
 		dl.pushProgressBack(message);
 		dl.elMsg.addClass('cross').removeClass('loading');
 		$('#download_progress').addClass('error');
+	}
+
+	dl.progressResume = function() {
+		dl.elMsg.removeClass('cross').addClass('loading');
+		dl.elBar.removeClass('bar-danger');
 	}
 
 	return dl;
