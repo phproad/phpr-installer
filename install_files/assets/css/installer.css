@@ -302,7 +302,8 @@ form .control.checkbox input[type="checkbox"] {
 	text-align: center;
 }
 
-#download_progress .progress-danger .bar {
+#download_progress .progress-danger .bar,
+#download_progress .progress .bar-danger {
 	background-color: #dd514c;
 	background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#c43c35));
