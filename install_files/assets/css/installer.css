@@ -17,6 +17,7 @@ blockquote { text-align: left; padding:.5em; margin: 0 3em; border:1px dashed #c
 .pull-right { float:right; } 
 .pull-left { float:left; }
 .button { -webkit-appearance: menuitem; font-weight: bold; font-size: 0.938em; line-height: 1.3em; padding: 0.45em 0.8em; float: none; border: 1px solid #ccc; cursor: pointer; margin: 5px; text-decoration: none; display: inline-block; border-radius: 4px; color: #333333; border-color: #c8c8c8; border-bottom-color: #aeaeae; text-shadow: 0 0.09em 0.03em #fff; background: #eeeeee; filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#c8c8c8'); background: -moz-linear-gradient(top, #eeeeee 0%, #c8c8c8 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee), color-stop(100%, #c8c8c8)); background: -webkit-linear-gradient(top, #eeeeee 0%, #c8c8c8 100%); background: -o-linear-gradient(top, #eeeeee 0%, #c8c8c8 100%); background: -ms-linear-gradient(top, #eeeeee 0%, #c8c8c8 100%); background: linear-gradient(top, #eeeeee 0%, #c8c8c8 100%); -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset; -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset; }
+.button.danger { color: #990000; }
 .button:hover { background: #fff; filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff', endColorstr='#cacaca'); background: -moz-linear-gradient(top, #fff 0%, #cacaca 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fff), color-stop(100%, #cacaca)); background: -webkit-linear-gradient(top, #fff 0%, #cacaca 100%); background: -o-linear-gradient(top, #fff 0%, #cacaca 100%); background: -ms-linear-gradient(top, #fff 0%, #cacaca 100%); background: linear-gradient(top, #fff 0%, #cacaca 100%); -webkit-box-shadow: '0 1px 5px rgba(0, 0, 0, 0.1),  inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0em .5em rgba(255, 255, 255, 0.5)'; -moz-box-shadow: '0 1px 5px rgba(0, 0, 0, 0.1),  inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0em .5em rgba(255, 255, 255, 0.5)'; box-shadow: '0 1px 5px rgba(0, 0, 0, 0.1),  inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0em .5em rgba(255, 255, 255, 0.5)'; color: #333333; text-decoration: none; }
 .button:active { background: #dcdcdc; filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dcdcdc', endColorstr='#fff'); background: -moz-linear-gradient(top, #dcdcdc 0%, #fff 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dcdcdc), color-stop(100%, #fff)); background: -webkit-linear-gradient(top, #dcdcdc 0%, #fff 100%); background: -o-linear-gradient(top, #dcdcdc 0%, #fff 100%); background: -ms-linear-gradient(top, #dcdcdc 0%, #fff 100%); background: linear-gradient(top, #dcdcdc 0%, #fff 100%); -webkit-box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25) inset; -moz-box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25) inset; box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25) inset; }
 .button[disabled], .button .disabled { background: #fff; box-shadow: none; border-color: #ccc; }
@@ -278,11 +279,13 @@ form .control.checkbox input[type="checkbox"] {
 #download_progress .progress {
     position: relative;
 }
+
 #download_progress .progress .bar {
     position: absolute;
     overflow: hidden;
     border-radius: 4px;
 }
+
 #download_progress .progress .progressbar-back-text {
     position: absolute;
     left:0;
@@ -291,6 +294,7 @@ form .control.checkbox input[type="checkbox"] {
     font-size: 12px;
     text-align: center;
 }
+
 #download_progress .progress .progressbar-front-text {
     display: block;
     width: 100%;
@@ -298,3 +302,13 @@ form .control.checkbox input[type="checkbox"] {
     text-align: center;
 }
 
+#download_progress .progress-danger .bar {
+    background-color: #dd514c;
+    background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#c43c35));
+    background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
+    background-image: linear-gradient(to bottom, #ee5f5b, #c43c35);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffc43c35', GradientType=0);
+}
