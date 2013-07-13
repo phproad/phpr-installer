@@ -457,6 +457,10 @@ class Phpr_Installer_Manager
 		$crypt = Phpr_Installer_Crypt::create();
 		$admin_user_params = $crypt->decrypt_from_file(PATH_INSTALL_APP.'/temp/params5.dat', self::$install_key);
 
+		// An admin user already exists
+		if (Admin_User::create()->find())
+			return;
+
 		$user = new Admin_User();
 		$user->first_name = $admin_user_params['firstname'];
 		$user->last_name = $admin_user_params['lastname'];
