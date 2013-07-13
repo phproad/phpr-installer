@@ -18,6 +18,7 @@
 		<div class="form-actions">
 			<div class="pull-right">
 				<input type="button" class="button" value="Download" id="download_btn" onclick="return Phpr_Downloader.startDownload()" />
+				<input type="button" class="button danger" value="Retry" id="retry_btn" onclick="return Phpr_Downloader.retryDownload()" style="display:none" />
 				<input type="submit" name="form_action" class="button" value="Next" id="next_btn" style="display:none" />
 			</div>
 			<?php if (isset($error)): ?>
