@@ -64,51 +64,51 @@ form input[type=search],
 form input[type=email],
 form textarea,
 form select {
-    border-radius: 4px;
-    padding: 6px;
-    border: 1px solid #dddddd;
-    resize: none;
-    font-size: 14px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    box-sizing: border-box;
-    background: #ffffff;
+	border-radius: 4px;
+	padding: 6px;
+	border: 1px solid #dddddd;
+	resize: none;
+	font-size: 14px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+	background: #ffffff;
 }
 
 form input.disabled,
 form textarea.disabled,
 form select.disabled {
-    background: #f0f0f0;
+	background: #f0f0f0;
 }
 
 form .control {
-    clear: both;
-    line-height: 2.5;
-    padding: 0.2em;
-    overflow: hidden;
-    padding-right: .5em;
+	clear: both;
+	line-height: 2.5;
+	padding: 0.2em;
+	overflow: hidden;
+	padding-right: .5em;
 }
 
 form .control.half {
-    float: left;
-    clear: none;
-    width: 48%;
-    padding-right: .25em;
+	float: left;
+	clear: none;
+	width: 48%;
+	padding-right: .25em;
 }
 
 form .control.error {
-    background: rgba(255,0,0,.05) url('../images/cross.png') 99% 1em no-repeat;
-    border: 1px dashed #eb6363;
+	background: rgba(255,0,0,.05) url('../images/cross.png') 99% 1em no-repeat;
+	border: 1px dashed #eb6363;
 }
 
 form .control .tip {
-    margin: 0;
-    line-height: 2.2;
-    font-size: .8em;
-    color: #666;
-    position: relative;
-    margin-left: 0.1em;    
+	margin: 0;
+	line-height: 2.2;
+	font-size: .8em;
+	color: #666;
+	position: relative;
+	margin-left: 0.1em;    
 }
 
 form .control input[type="color"],
@@ -125,7 +125,7 @@ form .control input[type="url"],
 form .control input[type="text"],
 form .control input[type="search"],
 form .control input[type="password"] {
-    width:330px;
+	width:330px;
 }
 
 form .control.half input[type="color"],
@@ -142,7 +142,7 @@ form .control.half input[type="url"],
 form .control.half input[type="text"],
 form .control.half input[type="search"],
 form .control.half input[type="password"] {
-    width:130px;
+	width:130px;
 }
 
 form .control.full input[type="color"],
@@ -159,156 +159,156 @@ form .control.full input[type="url"],
 form .control.full input[type="text"],
 form .control.full input[type="search"],
 form .control.full input[type="password"] {
-    width:395px;
+	width:395px;
 }
 
 form label {
-    display: block;
-    float: left;
-    margin-right: 6px;
-    line-height: inherit;
-    text-align: right;
-    vertical-align: top;
-    width: 155px;
+	display: block;
+	float: left;
+	margin-right: 6px;
+	line-height: inherit;
+	text-align: right;
+	vertical-align: top;
+	width: 155px;
 }
 
 form .control.full label,
 form .control.half label {
-    width: 90px;
-    margin-right: 3px;
+	width: 90px;
+	margin-right: 3px;
 }
 
 form textarea {
-    min-height: 5em;
+	min-height: 5em;
 }
 form input[type="checkbox"],
 form input[type="radio"] {
-    line-height: inherit;
-    margin-top: 4px;
-    float: left;
+	line-height: inherit;
+	margin-top: 4px;
+	float: left;
 }
 form input[type="checkbox"] + label,
 form input[type="radio"] + label {
-    line-height: inherit;
-    margin: 0 16px 0 6px;
-    width: auto;
-    min-width: auto;
+	line-height: inherit;
+	margin: 0 16px 0 6px;
+	width: auto;
+	min-width: auto;
 }
 
 form .control.mini label {
-    width:250px;
+	width:250px;
 }
 form .control.mini input {
-    width: 80px;
-    margin-right: 155px;
+	width: 80px;
+	margin-right: 155px;
 }
 form .control.mini select {
-    max-width: 235px;
+	max-width: 235px;
 }
 
 form .control.checkbox {
-    padding: 0;
-    margin-left: 180px;
+	padding: 0;
+	margin-left: 180px;
 }
 form .control.checkbox label, 
 form .control.checkbox input {
-    width: auto;    
+	width: auto;    
 }
 form .control.checkbox input[type="checkbox"] {
-    margin-top: 13px;
-    margin-right: 6px;
+	margin-top: 13px;
+	margin-right: 6px;
 } 
 
 #download_progress {
-    padding: 1em 0;
+	padding: 1em 0;
 }
 
 #download_progress .progress {
-    height: 20px;
-    margin-bottom: .5em;
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #ffffff;
-    background-image: -moz-linear-gradient(top, #ffffff, #f9f9f9);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f9f9f9));
-    background-image: -webkit-linear-gradient(top, #ffffff, #f9f9f9);
-    background-image: -o-linear-gradient(top, #ffffff, #f9f9f9);
-    background-image: linear-gradient(to bottom, #ffffff, #f9f9f9);
-    background-repeat: repeat-x;
-    border-radius: 4px;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f9f9f9', GradientType=0);
-    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-    -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+	height: 20px;
+	margin-bottom: .5em;
+	overflow: hidden;
+	border: 1px solid #ccc;
+	background-color: #ffffff;
+	background-image: -moz-linear-gradient(top, #ffffff, #f9f9f9);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f9f9f9));
+	background-image: -webkit-linear-gradient(top, #ffffff, #f9f9f9);
+	background-image: -o-linear-gradient(top, #ffffff, #f9f9f9);
+	background-image: linear-gradient(to bottom, #ffffff, #f9f9f9);
+	background-repeat: repeat-x;
+	border-radius: 4px;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f9f9f9', GradientType=0);
+	-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+	-moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 #download_progress .progress .bar {
-    float: left;
-    width: 0;
-    height: 100%;
-    font-size: 12px;
-    color: #ffffff;
-    text-align: center;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    background-color: #0e90d2;
-    background-image: -moz-linear-gradient(top, #5ca7dc, #2983c3);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5ca7dc), to(#2983c3));
-    background-image: -webkit-linear-gradient(top, #5ca7dc, #2983c3);
-    background-image: -o-linear-gradient(top, #5ca7dc, #2983c3);
-    background-image: linear-gradient(to bottom, #5ca7dc, #2983c3);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5ca7dc', endColorstr='#2983c3', GradientType=0);
-    -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    -moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-transition: width 3s ease;
-    -moz-transition: width 3s ease;
-    -o-transition: width 3s ease;
-    transition: width 3s ease;
+	float: left;
+	width: 0;
+	height: 100%;
+	font-size: 12px;
+	color: #ffffff;
+	text-align: center;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+	background-color: #0e90d2;
+	background-image: -moz-linear-gradient(top, #5ca7dc, #2983c3);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5ca7dc), to(#2983c3));
+	background-image: -webkit-linear-gradient(top, #5ca7dc, #2983c3);
+	background-image: -o-linear-gradient(top, #5ca7dc, #2983c3);
+	background-image: linear-gradient(to bottom, #5ca7dc, #2983c3);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5ca7dc', endColorstr='#2983c3', GradientType=0);
+	-webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+	-moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+	box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-transition: width 3s ease;
+	-moz-transition: width 3s ease;
+	-o-transition: width 3s ease;
+	transition: width 3s ease;
 }
 
 #download_progress .progress .bar + .bar {
-    -webkit-box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    -moz-box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+	-webkit-box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+	-moz-box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+	box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
 #download_progress .progress {
-    position: relative;
+	position: relative;
 }
 
 #download_progress .progress .bar {
-    position: absolute;
-    overflow: hidden;
-    border-radius: 4px;
+	position: absolute;
+	overflow: hidden;
+	border-radius: 4px;
 }
 
 #download_progress .progress .progressbar-back-text {
-    position: absolute;
-    left:0;
-    width: 100%;
-    height: 100%;
-    font-size: 12px;
-    text-align: center;
+	position: absolute;
+	left:0;
+	width: 100%;
+	height: 100%;
+	font-size: 12px;
+	text-align: center;
 }
 
 #download_progress .progress .progressbar-front-text {
-    display: block;
-    width: 100%;
-    font-size: 12px;
-    text-align: center;
+	display: block;
+	width: 100%;
+	font-size: 12px;
+	text-align: center;
 }
 
 #download_progress .progress-danger .bar {
-    background-color: #dd514c;
-    background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#c43c35));
-    background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: linear-gradient(to bottom, #ee5f5b, #c43c35);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffc43c35', GradientType=0);
+	background-color: #dd514c;
+	background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#c43c35));
+	background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
+	background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
+	background-image: linear-gradient(to bottom, #ee5f5b, #c43c35);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffc43c35', GradientType=0);
 }
