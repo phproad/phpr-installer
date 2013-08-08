@@ -25,7 +25,7 @@ class Phpr_Installer_Manager
 			'type' => $type
 		);
 
-		$tmp_file = self::get_package_file_path($name);
+		$tmp_file = self::get_package_file_path($name, $type);
 		$result = self::request_gateway_data(self::uri_get_install_file, $params);
 
 		if (!isset($result->data) || !$result->data) 
@@ -68,8 +68,8 @@ class Phpr_Installer_Manager
 			throw new Exception('Unable to find package information for '. $name);
 
 		$code = $package_info->short_code;
-		$tmp_file = self::get_package_file_path($name);
-		$tmp_path = dirname($tmp_file).DS.$name.DS;
+		$tmp_file = self::get_package_file_path($name, $type);
+		$tmp_path = dirname($tmp_file).DS.$type.'-'.$name.DS;
 
 		if (!file_exists($tmp_path))
 			@mkdir($tmp_path);
@@ -82,37 +82,37 @@ class Phpr_Installer_Manager
 		// Handle module
 		if ($package_info->type == 'module') {
 	
-			$tmp_module_file_path = self::find_file($tmp_path, $code.'_module.php');
-			if (!$tmp_module_file_path)
+			$module_info_file = self::find_file($tmp_path, $code.'_module.php');
+			if (!$module_info_file)
 				throw new Exception('Package '.$name.' does not appear to be a valid module.');
 
 			if ($code != 'core') {
-				$tmp_package_path = dirname(dirname($tmp_module_file_path));
-				$package_path = PATH_INSTALL.DS.'modules'.DS.$code;
+				$source_dir = dirname(dirname($module_info_file));
+				$target_dir = PATH_INSTALL.DS.'modules'.DS.$code;
 			} else {
 				// Core package must contain the bootstrap/framework files
-				$tmp_package_path = dirname(dirname(dirname(dirname($tmp_module_file_path))));
-				$package_path = PATH_INSTALL;
+				$source_dir = dirname(dirname(dirname(dirname($module_info_file))));
+				$target_dir = PATH_INSTALL;
 			}
 		}
 
 		// Handle theme
-		else if ($package_info->type == 'theme') {
-			$tmp_package_path = $tmp_path.DS.$code;
-			$package_path = PATH_INSTALL.DS.'themes'.DS.$code;
+		elseif ($package_info->type == 'theme') {
+			$source_dir = $tmp_path;
+			$target_dir = PATH_INSTALL.DS.'themes'.DS.$code;
 		}
 
 		extract($installer->get_file_permissions());
 
-		if (!file_exists($package_path))
-			@mkdir($package_path, $folder_permissions, true);
+		if (!file_exists($target_dir))
+			@mkdir($target_dir, $folder_permissions, true);
 
-		self::copy_directory($tmp_package_path, $package_path);
+		self::copy_directory($source_dir, $target_dir);
 		self::delete_recursive($tmp_path);
 		@unlink($tmp_file);
 	}
 
-	public static function get_package_file_path($name)
+	public static function get_package_file_path($name, $type)
 	{
 		$tmp_path = PATH_INSTALL_APP.DS.'temp';
 
@@ -122,7 +122,7 @@ class Phpr_Installer_Manager
 		if (!is_writable($tmp_path))
 			throw new Exception("Unable to write to path ".$tmp_path);
 		
-		$tmp_file = $tmp_path.DS.strtolower($name).'.arc';
+		$tmp_file = $tmp_path.DS.strtolower($type).'-'.strtolower($name).'.arc';
 
 		return $tmp_file;
 	}
